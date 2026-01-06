@@ -1,0 +1,79 @@
+# Пустой модуль
+
+==>
+Module
+
+# Процедура (минимальная)
+Процедура Тест()
+КонецПроцедуры
+==>
+Module(MethodDef(ProcedureDef(Identifier, ParamList, Block)))
+
+# Функция (возврат числа)
+Функция Сумма()
+  Возврат 1;
+КонецФункции
+==>
+Module(MethodDef(FunctionDef(Identifier, ParamList, Block(Statement(ReturnStmt(Expression(...)))))))
+
+# Число как выражение-оператор
+1;
+==>
+Module(Statement(SimpleStmt(Expression(OrExpr(AndExpr(CompareExpr(AddExpr(MulExpr(UnaryExpr(PostfixExpr(Primary(Literal(Number)))))))))))))
+
+# Строка
+"Привет";
+==>
+Module(Statement(SimpleStmt(Expression(OrExpr(AndExpr(CompareExpr(AddExpr(MulExpr(UnaryExpr(PostfixExpr(Primary(Literal(String)))))))))))))
+
+# Булевы литералы
+Истина;
+Ложь;
+==>
+Module(
+  Statement(SimpleStmt(Expression(...))),
+  Statement(SimpleStmt(Expression(...))))
+
+# Неопределено
+Неопределено;
+==>
+Module(Statement(SimpleStmt(Expression(...))))
+
+# Префиксные унарные операторы
+-1;
+НЕ Ложь;
+==>
+Module(
+  Statement(SimpleStmt(Expression(...))),
+  Statement(SimpleStmt(Expression(...))))
+
+# Приоритет операторов (+ и *)
+1 + 2 * 3;
+==>
+Module(Statement(SimpleStmt(Expression(OrExpr(AndExpr(CompareExpr(AddExpr(
+  MulExpr(...),
+  MulExpr(UnaryExpr(...), UnaryExpr(...))
+))))))))
+
+# Вызов функции и цепочка MemberAccess
+Объект.Метод(1, 2).Свойство;
+==>
+Module(Statement(SimpleStmt(Expression(...))))
+
+# Индексация
+Массив[0];
+==>
+Module(Statement(SimpleStmt(Expression(...))))
+
+# Новый
+Новый Структура;
+==>
+Module(Statement(SimpleStmt(Expression(...))))
+
+# IfStmt с бинарным сравнением
+Если а > 0 Тогда
+  б = 1;
+КонецЕсли;
+==>
+Module(Statement(IfStmt(Expression(...), Block(Statement(SimpleStmt(Assignment(...)))))))
+

@@ -1,0 +1,75 @@
+# Комментарий в начале строки
+// Это комментарий
+1;
+==>
+Module(LineComment,Statement(...))
+
+# Комментарий в конце строки
+1; // Комментарий после кода
+==>
+Module(Statement(...),LineComment)
+
+# Комментарий перед выражением
+// Комментарий перед кодом
+1;
+==>
+Module(LineComment,Statement(...))
+
+# Комментарий между выражениями
+1;
+// Комментарий между выражениями
+2;
+==>
+Module(
+  Statement(...),
+  LineComment,
+  Statement(...))
+
+# Комментарий внутри процедуры
+Процедура Тест()
+  // Комментарий внутри процедуры
+  а = 1;
+КонецПроцедуры
+==>
+Module(MethodDef(ProcedureDef(Identifier, ParamList, LineComment, Block(Statement(Assignment(...))))))
+
+# Комментарий перед возвратом
+Функция Сумма()
+  // Комментарий перед возвратом
+  Возврат 1;
+КонецФункции
+==>
+Module(MethodDef(FunctionDef(Identifier, ParamList, LineComment, Block(Statement(ReturnStmt(Expression(...)))))))
+
+# Множественные комментарии
+// Первый комментарий
+// Второй комментарий
+1;
+// Третий комментарий
+2;
+==>
+Module(
+  LineComment,
+  LineComment,
+  Statement(...),
+  LineComment,
+  Statement(...))
+
+# Комментарий перед условным оператором
+Если Истина Тогда
+  // Комментарий в блоке
+  а = 1;
+КонецЕсли;
+==>
+Module(Statement(IfStmt(Expression(...), LineComment, Block(Statement(Assignment(...))))))
+
+# Комментарий с выражением, содержащим деление
+1 / 2; // Комментарий после деления
+==>
+Module(Statement(...),LineComment)
+
+# Пустой комментарий
+// 
+1;
+==>
+Module(LineComment,Statement(...))
