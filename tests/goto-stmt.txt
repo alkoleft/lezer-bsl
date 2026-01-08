@@ -1,0 +1,92 @@
+# Простой оператор Перейти
+Перейти ~метка;
+==>
+Module(
+  GotoStmt(LabelName))
+
+# Оператор Перейти на английском
+Goto ~label;
+==>
+Module(
+  GotoStmt(LabelName))
+
+# Оператор Перейти в условном операторе
+Если условие Тогда
+  Перейти ~метка;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(...),
+  Block(
+    GotoStmt(LabelName))))
+
+# Оператор Перейти в цикле
+Пока Истина Цикл
+  Перейти ~метка;
+КонецЦикла;
+==>
+Module(WhileStmt(
+  Condition(...),
+  Block(
+    GotoStmt(LabelName))))
+
+# Оператор Перейти в блоке обработки исключений
+Попытка
+  Перейти ~метка;
+Исключение
+  Сообщить("Ошибка");
+КонецПопытки;
+==>
+Module(TryStmt(
+  Block(
+    GotoStmt(LabelName)),
+    Block(...)))
+
+# Оператор Перейти с несколькими метками
+Перейти ~метка1;
+Перейти ~метка2;
+Перейти ~метка3;
+==>
+Module(
+GotoStmt(LabelName),
+GotoStmt(LabelName),
+GotoStmt(LabelName))
+
+# Оператор Перейти с условием
+Если а > 0 Тогда
+  Перейти ~позитивная;
+Иначе
+  Перейти ~негативная;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(...),
+  Block(
+    GotoStmt(LabelName)),
+  ElseClause(Block(GotoStmt(LabelName)))))
+
+# Оператор Перейти внутри процедуры
+Процедура Тест()
+  Перейти ~метка;
+КонецПроцедуры
+==>
+Module(ProcedureDef(Name,ParamList,Block(
+GotoStmt(LabelName))))
+
+# Оператор Перейти внутри функции
+Функция Тест()
+  Перейти ~метка;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Block(
+GotoStmt(LabelName))))
+
+# Оператор Перейти с разными именами меток
+Перейти ~начало;
+Перейти ~конец;
+Перейти ~обработка;
+==>
+Module(
+GotoStmt(LabelName),
+GotoStmt(LabelName),
+GotoStmt(LabelName))

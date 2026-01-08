@@ -1,0 +1,110 @@
+# Простое объявление переменной
+Перем а;
+==>
+Module(
+  VarDecl(VariableName))
+
+# Объявление нескольких переменных
+Перем а, б, в;
+==>
+Module(
+  VarDecl(VariableName,VariableName,VariableName))
+
+# Объявление переменной с Экспорт
+Перем а Экспорт;
+==>
+Module(
+  VarDecl(VariableName,Export))
+
+# Объявление нескольких переменных с Экспорт
+Перем а, б, в Экспорт;
+==>
+Module(
+  VarDecl(VariableName,VariableName,VariableName,Export))
+
+# Объявление переменной на английском
+Var a;
+==>
+Module(
+  VarDecl(VariableName))
+
+# Объявление переменной с Экспорт на английском
+Var a Export;
+==>
+Module(
+  VarDecl(VariableName,Export))
+
+# Объявление переменной с аннотацией
+&НаКлиенте
+Перем а;
+==>
+Module(
+  VarDecl(Annotation,VariableName))
+
+# Объявление переменной с аннотацией и Экспорт
+&НаКлиенте
+Перем а Экспорт;
+==>
+Module(
+  VarDecl(Annotation,VariableName,Export))
+
+# Объявление нескольких переменных с аннотацией
+&НаКлиенте
+Перем а, б, в;
+==>
+Module(
+  VarDecl(Annotation,VariableName,VariableName,VariableName))
+
+# Объявление переменной внутри модуля
+Перем глобальная;
+Процедура Тест()
+КонецПроцедуры
+==>
+Module(
+  VarDecl(VariableName),
+  ProcedureDef(...))
+
+# Объявление переменной перед процедурой
+Перем а;
+Процедура Тест()
+КонецПроцедуры
+==>
+Module(
+  VarDecl(VariableName),
+  ProcedureDef(...))
+
+# Объявление переменной перед функцией
+Перем а;
+Функция Тест()
+КонецФункции
+==>
+Module(
+  VarDecl(VariableName),
+  FunctionDef(...))
+
+# Несколько объявлений переменных
+Перем а;
+Перем б;
+Перем в;
+==>
+Module(
+  VarDecl(VariableName),
+  VarDecl(VariableName),
+  VarDecl(VariableName))
+
+# Объявление переменных с разными модификаторами
+Перем а;
+Перем б Экспорт;
+Перем в;
+==>
+Module(
+  VarDecl(VariableName),
+  VarDecl(VariableName,Export),
+  VarDecl(VariableName))
+
+# Объявление переменной с аннотацией на разных строках
+&НаКлиенте
+Перем а, б, в Экспорт;
+==>
+Module(
+  VarDecl(Annotation,VariableName,VariableName,VariableName,Export))

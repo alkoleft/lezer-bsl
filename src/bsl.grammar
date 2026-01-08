@@ -1,3 +1,42 @@
+@precedence {
+  typeargs,
+  typeMember,
+  typePrefix,
+  intersectionPrefixed @left,
+  intersection @left,
+  unionPrefixed @left,
+  union @left,
+  typeExtends @right,
+  else @right,
+  member,
+  readonly,
+  newArgs,
+  call,
+  instantiate,
+  taggedTemplate,
+  prefix,
+  postfix,
+  typeof,
+  exp @left,
+  times @left,
+  plus @left,
+  shift @left,
+  loop,
+  rel @left,
+  satisfies,
+  equal @left,
+  bitAnd @left,
+  bitXor @left,
+  bitOr @left,
+  and @left,
+  or @left,
+  ternary @right,
+  assign @right,
+  comma @left,
+  statement @cut,
+  predicate
+}
+
 // Корневой элемент модуля - последовательность элементов (процедур, функций, операторов)
 @top Module { element* }
 
@@ -15,7 +54,7 @@
   }
 
   // Оператор деления (отдельный токен для корректной обработки приоритетов)
-  Divide[@name=ArithOp] { "/" }
+  divide[@name=ArithOp] { "/" }
 
   // Строка препроцессора (директива компиляции, начинается с #)
   // Сохраняется как токен для возможности анализа потребителями
@@ -51,22 +90,16 @@
   Date { "'" @digit@digit@digit@digit@digit@digit@digit@digit (@digit@digit@digit@digit@digit@digit)? "'" }
 
   // Идентификатор: начинается с буквы или подчеркивания, может содержать буквы, цифры, кириллицу
-  Identifier { IdentStart IdentContinue* }
+  identifier { IdentStart IdentContinue* }
   // Первый символ идентификатора: латинская буква, подчеркивание или кириллица
   IdentStart { @asciiLetter | $[_А-Яа-яЁё] }
   // Последующие символы идентификатора: то же самое плюс цифры
   IdentContinue { IdentStart | @digit }
 
   // Приоритеты токенов для разрешения неоднозначностей
-  @precedence { LineComment, Divide }
+  @precedence { LineComment, divide }
   @precedence { MultilineString, String }
-  @precedence { space, Identifier }
-}
-
-// Приоритеты операций
-// assign (присваивание) - с отсечением для избежания конфликтов
-@precedence {
-  assign @cut
+  @precedence { space, identifier }
 }
 
 // Элемент модуля: может быть строка препроцессора, аннотация, определение метода или оператор
@@ -74,7 +107,7 @@ element {
   PreprocLine |
   ProcedureDef |
   FunctionDef |
-  Statement
+  statement
 }
 
 // Строка препроцессора
@@ -90,233 +123,334 @@ commaSep1<content> {
   content ("," content)*
 }
 
-// Объявление переменных: ключевое слово Перем, список спецификаций переменных, точка с запятой
-VarDecl { Annotation? kwVar commaSep1<VarSpec> Export { kwExport }? ";" }
-// Спецификация переменной: идентификатор и опциональное начальное значение
-VarSpec { Identifier ("=" Expression)? }
+// Объявление переменных модуля: ключевое слово Перем, список спецификаций переменных, точка с запятой
+VarDecl {
+  Annotation?
+  kw<"Var", "Перем">
+  commaSep1<VariableName>
+  namedKw<"Export", "Экспорт">?
+}
 
 // Определение процедуры: опционально асинхронная, ключевое слово Процедура, имя, список параметров,
 // опциональный модификатор Экспорт, блок кода, ключевое слово КонецПроцедуры
-ProcedureDef[closedBy="kwEndProcedure"] {
+ProcedureDef {
   Annotation?
-  kwAsync? kwProcedure Identifier ParamList Export { kwExport }? Block kwEndProcedure
+  namedKw<"Async", "Асинх">?
+  kw<"Procedure", "Процедура">
+  Name { identifier }
+  ParamList
+  namedKw<"Export", "Экспорт">?
+  Block
+  kw<"EndProcedure", "КонецПроцедуры">
 }
 
 // Определение функции: опционально асинхронная, ключевое слово Функция, имя, список параметров,
 // опциональный модификатор Экспорт, блок кода, ключевое слово КонецФункции
-FunctionDef[closedBy="kwEndFunction"] {
+FunctionDef {
   Annotation?
-  kwAsync? kwFunction Identifier ParamList Export { kwExport }? Block kwEndFunction
+  namedKw<"Async", "Асинх">?
+  kw<"Function", "Функция">
+  Name { identifier }
+  ParamList
+  namedKw<"Export", "Экспорт">?
+  Block
+  kw<"EndFunction", "КонецФункции">
 }
 
 // Список параметров: в круглых скобках, разделенные запятыми
 ParamList { "(" commaSep<Param> ")" }
+
 // Параметр: опционально ключевое слово Знач (передача по значению), затем имя
-Param { kwVal? Identifier }
+Param {
+  namedKw<"Val", "Знач">?
+  Name { identifier }
+  DefaultValue { "=" literal }?
+}
 
 // Блок кода: последовательность операторов, строк препроцессора и аннотаций
-Block { (Statement | PreprocLine)* }
+Block {
+  (statement | PreprocLine)*
+}
 
 // Оператор (statement): различные типы операторов языка
 // Помечен как группа для удобства работы с AST
-Statement[@isGroup=StatementGroup] {
-  IfStmt |                    // Условный оператор
-  WhileStmt |                 // Цикл пока
-  ForStmt |                   // Цикл для
-  TryStmt |                   // Блок обработки исключений
-  ExecuteStmt ";" |           // Оператор Выполнить
-  AwaitStmt ";" |             // Оператор Ждать
-  ContinueStmt ";" |          // Оператор Продолжить
-  BreakStmt ";" |             // Оператор Прервать
-  GotoStmt ";" |              // Оператор Перейти
-  LabelStmt ";" |             // Метка (для оператора Перейти)
-  AddHandlerStmt ";" |        // Оператор ДобавитьОбработчик
-  RemoveHandlerStmt ";" |     // Оператор УдалитьОбработчик
-  ReturnStmt ";" |            // Оператор Возврат
-  RaiseStmt ";" |             // Оператор ВызватьИсключение
-  VarDecl |                   // Объявление переменных
-  ExpressionStmt { Expression ";" } |  // Выражение как оператор
-  Assignment ";" |            // Присваивание
-  ";"                         // Пустой оператор
+statement[@isGroup=Statement] {
+  IfStmt ";" |                   // Условный оператор
+  WhileStmt ";" |                // Цикл пока
+  ForStmt ";" |                  // Цикл для
+  ForEachStmt ";" |              // Цикл для каждого
+  TryStmt ";" |                  // Блок обработки исключений
+  ExecuteStmt ";" |              // Оператор Выполнить
+  AwaitStmt { AwaitExpr } ";" |  // Оператор Ждать
+  ContinueStmt ";" |             // Оператор Продолжить
+  BreakStmt ";" |                // Оператор Прервать
+  GotoStmt ";" |                 // Оператор Перейти
+  LabelStmt ";" |                // Метка (для оператора Перейти)
+  AddHandlerStmt ";" |           // Оператор ДобавитьОбработчик
+  RemoveHandlerStmt ";" |        // Оператор УдалитьОбработчик
+  ReturnStmt ";" |               // Оператор Возврат
+  RaiseStmt ";" |                // Оператор ВызватьИсключение
+  VarDecl ";" |                  // Объявление переменных
+  AssignmentStmt ";" |           // Присваивание
+  CallStmt ";" |                 // Вызов метода
+  ";"                            // Пустой оператор
+}
+
+// Оператор вызова метода: переменная или свойство объекта с аргументами
+CallStmt {
+  !assign
+  VariableName
+  (memberAccess | indexAccess)*
+  ArgList
 }
 
 // Условный оператор: Если ... Тогда ... ИначеЕсли ... Тогда ... Иначе ... КонецЕсли
 IfStmt {
-  kwIf Expression kwThen Block
-  (kwElseIf Expression kwThen Block)*
-  (kwElse Block)?
-  kwEndIf ";"
+  kw<"If", "Если">
+  Condition { expression }
+  kw<"Then", "Тогда">
+  Block
+  ElseIfClause {
+    kw<"ElseIf", "ИначеЕсли">
+    Condition { expression }
+    kw<"Then", "Тогда">
+    Block
+  }*
+  ElseClause {
+    kw<"Else", "Иначе">
+    Block
+  }?
+  kw<"EndIf", "КонецЕсли">
 }
 
 // Цикл пока: Пока ... Цикл ... КонецЦикла
-WhileStmt { kwWhile Expression kwDo Block kwEndDo ";" }
+WhileStmt {
+  kw<"While", "Пока">
+  Condition { expression }
+  kw<"Do", "Цикл">
+  Block
+  kw<"EndDo", "КонецЦикла">
+}
 
 // Цикл для: может быть двух видов:
 // 1. Для Каждого ... Из ... (перебор коллекции)
 // 2. Для ... = ... По ... (цикл с счетчиком)
+ForEachStmt {
+  kw<"For", "Для">
+  kw<"Each", "Каждого">
+  VariableName
+  kw<"In", "Из">
+  Collection { expression }
+  kw<"Do", "Цикл">
+  Block
+  kw<"EndDo", "КонецЦикла">
+}
 ForStmt {
-  kwFor (
-    kwEach Identifier kwIn Expression |
-    Identifier "=" Expression kwTo Expression
-  )
-  kwDo Block kwEndDo ";"
+  kw<"For", "Для">
+  VariableName
+  "="
+  Start { expression }
+  kw<"To", "По">
+  End { expression }
+  kw<"Do", "Цикл">
+  Block
+  kw<"EndDo", "КонецЦикла">
 }
 
 // Блок обработки исключений: Попытка ... Исключение ... КонецПопытки
-TryStmt { kwTry Block kwExcept Block kwEndTry ";" }
+TryStmt {
+  kw<"Try", "Попытка">
+  Block
+  kw<"Except", "Исключение">
+  Block
+  kw<"EndTry", "КонецПопытки">
+}
 
 // Оператор возврата из функции/процедуры: Возврат [значение]
-ReturnStmt { kwReturn Expression? }
+ReturnStmt {
+  kw<"Return", "Возврат">
+  Expression { expression }?
+}
+
 // Оператор вызова исключения: ВызватьИсключение [значение]
-RaiseStmt { kwRaise Expression? }
+RaiseStmt {
+  kw<"Raise", "ВызватьИсключение">
+  Expression { expression }?
+}
 
 // Оператор выполнения выражения: Выполнить выражение
-ExecuteStmt { kwExecute Expression }
-
-// Оператор ожидания: Ждать выражение
-AwaitStmt { kwAwait Expression }
+ExecuteStmt {
+  kw<"Execute", "Выполнить">
+  Expression { expression }
+}
 
 // Оператор продолжения цикла: Продолжить (переход к следующей итерации)
-ContinueStmt { kwContinue }
+ContinueStmt {
+  kw<"Continue", "Continue">
+}
+
 // Оператор прерывания цикла: Прервать (выход из цикла)
-BreakStmt { kwBreak }
+BreakStmt {
+  kw<"Break", "Прервать">
+}
 
 // Оператор перехода: Перейти ~метка
-GotoStmt { kwGoto "~" Identifier }
+GotoStmt {
+  kw<"Goto", "Перейти">
+  "~"
+  LabelName { identifier }
+}
+
 // Метка для оператора перехода: ~метка:
-LabelStmt { "~" Identifier ":" }
+LabelStmt {
+  "~"
+  LabelName { identifier }
+  ":"
+}
 
 // Оператор добавления обработчика события: ДобавитьОбработчик событие, обработчик
-AddHandlerStmt { kwAddHandler Expression "," Expression }
+AddHandlerStmt {
+  kw<"AddHandler", "ДобавитьОбработчик">
+  Event { expression }
+  ","
+  Handler { expression }
+}
+
 // Оператор удаления обработчика события: УдалитьОбработчик событие, обработчик
-RemoveHandlerStmt { kwRemoveHandler Expression "," Expression }
+RemoveHandlerStmt {
+  kw<"RemoveHandler", "УдалитьОбработчик">
+  Event { expression }
+  ","
+  Handler { expression }
+}
 
 // Присваивание значения переменной: переменная = выражение
-Assignment { !assign Identifier "=" Expression }
-
-Expression[@isGroup=ExpressionGroup] {
-  BaseExpr (BinaryOp BaseExpr)*
+// Поддерживает присваивание простым переменным, свойствам объектов и элементам массивов
+// Разворачивается напрямую: VariableName с опциональными memberAccess и indexAccess
+AssignmentStmt {
+  !assign
+  VariableName
+  (memberAccess | indexAccess)*
+  "="
+  Expression { expression }
 }
 
-BaseExpr {
-  (kwNot | "+" | "-") BaseExpr |
-  Primary (CallArgs | MemberAccess | IndexAccess)* |
-  "(" Expression ")"
+// Выражение: различные типы выражений языка
+expression {
+  literal |                        // Литерал (число, строка, дата, булево значение и т.д.)
+  VariableName |                   // Идентификатор (переменная)
+  NewExpr |                        // Создание нового объекта
+  TernaryExpr |                    // Тернарное выражение
+  ParenthesizedExpr |              // Выражение в скобках
+  CallExpr |                       // Вызов функции/метода
+  BinaryExpr |                     // Бинарное выражение (операции с двумя операндами)
+  MemberExpr |                     // Доступ к свойству или элементу массива
+  AwaitExpr |                      // Асинхронное выражение
+  UnaryExpr                        // Унарное выражение
 }
 
-BinaryOp {
-  "*" | Divide | "%" | "+" | "-" | "=" | "<>" | ">=" | "<=" | ">" | "<" | kwAnd | kwOr
+// Вызов функции/метода: выражение со списком аргументов
+CallExpr {
+  expression !call ArgList
 }
 
-MemberAccess { "." Identifier }
-IndexAccess { "[" Expression "]" }
-CallArgs { "(" commaSep<Expression> ")" }
-
-// Базовое выражение (Primary): простые выражения, не требующие дополнительного разбора
-Primary {
-  Literal |        // Литерал (число, строка, дата, булево значение и т.д.)
-  Identifier |     // Идентификатор (переменная)
-  NewExpr |        // Создание нового объекта
-  TernaryExpr      // Тернарное выражение
+// Бинарное выражение: операции с двумя операндами
+BinaryExpr {
+  expression !times (divide | ArithOp<"%"> | ArithOp<"*">) expression |
+  expression !plus (ArithOp<"+"> | ArithOp<"-">) expression |
+  expression !rel (CompareOp<">=" | "<=" | ">" | "<">) expression |
+  expression !equal CompareOp<"=" | "<>"> expression |
+  expression !and LogicOp<namedKw<"AND", "И">> expression |
+  expression !or LogicOp<namedKw<"OR", "ИЛИ">> expression
 }
+
+// Асинхронное выражение: Ждать выражение
+AwaitExpr {
+  !prefix kw<"Await", "Ждать"> expression
+}
+
+// Унарное выражение: НЕ выражение или отрицание числа
+UnaryExpr {
+  !prefix (namedKw<"NOT", "НЕ"> | ArithOp<"-">) expression
+}
+
+// Выражение в скобках: (выражение)
+ParenthesizedExpr {
+  "(" expression ")"
+}
+
+// Доступ к свойству объекта или элементу массива: выражение.свойство или выражение[индекс]
+MemberExpr {
+  expression !member (memberAccess | indexAccess)
+}
+
+// Имя переменной: идентификатор
+VariableName { identifier }
+
+// Доступ к свойству объекта: .свойство
+memberAccess { "." PropertyName { identifier } }
+
+// Доступ к элементу массива: [индекс]
+indexAccess { "[" Index { expression } "]" }
+
+// Список аргументов: разделенные запятыми выражения в скобках
+ArgList { "(" commaSep<expression> ")" }
 
 // Создание нового объекта: Новый ТипОбъекта или Новый(конструктор, параметры)
 NewExpr {
-  kwNew Identifier |
-  kwNew "(" Expression ("," Expression)? ")"
+  kw<"New", "Новый">
+  TypeName { identifier } |
+  kw<"New", "Новый">
+  "("
+  commaSep1<expression>
+  ")"
 }
 
 // Тернарное выражение: ?(условие, значение_если_истина, значение_если_ложь)
-TernaryExpr { "?(" Expression "," Expression "," Expression ")" }
+TernaryExpr {
+  "?("
+  Condition { expression }
+  ","
+  TrueCause { expression }
+  ","
+  FalseCause { expression }
+  ")"
+}
 
 // Литерал: различные типы константных значений
-Literal {
-  Number |           // Числовой литерал
-  String |           // Строковый литерал
-  MultilineString |  // Многострочный строковый литерал
-  Date |             // Литерал даты
-  kwTrue |           // Булево значение Истина
-  kwFalse |          // Булево значение Ложь
-  kwUndefined |      // Значение Неопределено
-  kwNull             // Значение Null
+literal {
+  Number |                                    // Числовой литерал
+  String |                                    // Строковый литерал
+  MultilineString |                           // Многострочный строковый литерал
+  Date |                                      // Литерал даты
+  namedKw<"True", "Истина"> |                 // Булево значение Истина
+  namedKw<"False", "Ложь"> |                  // Булево значение Ложь
+  namedKw<"Undefined", "Неопределено"> |      // Значение Неопределено
+  @specialize[@name=Null]<identifier, "Null"> // Значение Null
 }
 
 // --- Вспомогательные правила для ключевых слов (MVP: каноническое написание RU/EN) ---
-// Ключевое слово Асинх/Async (асинхронная процедура/функция)
-kwAsync { @specialize<Identifier, "Асинх"> | @specialize<Identifier, "Async"> }
-// Ключевое слово Ждать/Await (ожидание асинхронной операции)
-kwAwait { @specialize<Identifier, "Ждать"> | @specialize<Identifier, "Await"> }
-// Ключевое слово Выполнить/Execute (выполнение строки кода)
-kwExecute { @specialize<Identifier, "Выполнить"> | @specialize<Identifier, "Execute"> }
 
-// Ключевое слово Процедура/Procedure
-kwProcedure { @specialize<Identifier, "Процедура"> | @specialize<Identifier, "Procedure"> }
-// Ключевое слово КонецПроцедуры/EndProcedure
-kwEndProcedure { @specialize<Identifier, "КонецПроцедуры"> | @specialize<Identifier, "EndProcedure"> }
-// Ключевое слово Функция/Function
-kwFunction { @specialize<Identifier, "Функция"> | @specialize<Identifier, "Function"> }
-// Ключевое слово КонецФункции/EndFunction
-kwEndFunction { @specialize<Identifier, "КонецФункции"> | @specialize<Identifier, "EndFunction"> }
-// Ключевое слово Экспорт/Export (экспорт процедуры/функции)
-kwExport { @specialize<Identifier, "Экспорт"> | @specialize<Identifier, "Export"> }
-// Ключевое слово Знач/Val (передача параметра по значению)
-kwVal { @specialize<Identifier, "Знач"> | @specialize<Identifier, "Val"> }
-// Ключевое слово Перем/Var (объявление переменной)
-kwVar { @specialize<Identifier, "Перем"> | @specialize<Identifier, "Var"> }
-// Ключевое слово Возврат/Return (возврат из процедуры/функции)
-kwReturn { @specialize<Identifier, "Возврат"> | @specialize<Identifier, "Return"> }
+// Общее правило для ключевых слов: поддерживает русский и английский варианты
+kw<termEn, termRu> {
+  @specialize<identifier, termRu> |
+  @specialize<identifier, termEn>
+}
 
-// Ключевые слова условного оператора: Если/If, Тогда/Then, ИначеЕсли/ElsIf, Иначе/Else, КонецЕсли/EndIf
-kwIf { @specialize<Identifier, "Если"> | @specialize<Identifier, "If"> }
-kwThen { @specialize<Identifier, "Тогда"> | @specialize<Identifier, "Then"> }
-kwElseIf { @specialize<Identifier, "ИначеЕсли"> | @specialize<Identifier, "ElsIf"> }
-kwElse { @specialize<Identifier, "Иначе"> | @specialize<Identifier, "Else"> }
-kwEndIf { @specialize<Identifier, "КонецЕсли"> | @specialize<Identifier, "EndIf"> }
+// Именованное ключевое слово: аналогично kw, но с явным именем в AST
+namedKw<termEn, termRu> {
+  @specialize[@name={termEn}]<identifier, termRu> |
+  @specialize[@name={termEn}]<identifier, termEn>
+}
 
-// Ключевые слова циклов:
-// Пока/While (цикл с условием), Для/For (цикл для), Каждого/Each (для каждого элемента),
-// Из/In (из коллекции), По/To (до значения), Цикл/Do (начало тела цикла), КонецЦикла/EndDo
-kwWhile { @specialize<Identifier, "Пока"> | @specialize<Identifier, "While"> }
-kwFor { @specialize<Identifier, "Для"> | @specialize<Identifier, "For"> }
-kwEach { @specialize<Identifier, "Каждого"> | @specialize<Identifier, "Each"> }
-kwIn { @specialize<Identifier, "Из"> | @specialize<Identifier, "In"> }
-kwTo { @specialize<Identifier, "По"> | @specialize<Identifier, "To"> }
-kwDo { @specialize<Identifier, "Цикл"> | @specialize<Identifier, "Do"> }
-kwEndDo { @specialize<Identifier, "КонецЦикла"> | @specialize<Identifier, "EndDo"> }
+// Арифметический оператор: базовое правило для арифметических операций
+ArithOp<expr> { expr }
 
-// Ключевые слова обработки исключений:
-// Попытка/Try (начало блока обработки), Исключение/Except (обработчик исключения),
-// КонецПопытки/EndTry (конец блока), ВызватьИсключение/Raise (выброс исключения)
-kwTry { @specialize<Identifier, "Попытка"> | @specialize<Identifier, "Try"> }
-kwExcept { @specialize<Identifier, "Исключение"> | @specialize<Identifier, "Except"> }
-kwEndTry { @specialize<Identifier, "КонецПопытки"> | @specialize<Identifier, "EndTry"> }
-kwRaise { @specialize<Identifier, "ВызватьИсключение"> | @specialize<Identifier, "Raise"> }
+// Логический оператор: базовое правило для логических операций
+LogicOp<expr> { expr }
 
-// Ключевые слова управления потоком выполнения:
-// Перейти/Goto (переход к метке), Прервать/Break (выход из цикла), Продолжить/Continue (следующая итерация)
-kwGoto { @specialize<Identifier, "Перейти"> | @specialize<Identifier, "Goto"> }
-kwBreak { @specialize<Identifier, "Прервать"> | @specialize<Identifier, "Break"> }
-kwContinue { @specialize<Identifier, "Продолжить"> | @specialize<Identifier, "Continue"> }
-
-// Ключевые слова работы с обработчиками событий:
-// ДобавитьОбработчик/AddHandler (добавление), УдалитьОбработчик/RemoveHandler (удаление)
-kwAddHandler { @specialize<Identifier, "ДобавитьОбработчик"> | @specialize<Identifier, "AddHandler"> }
-kwRemoveHandler { @specialize<Identifier, "УдалитьОбработчик"> | @specialize<Identifier, "RemoveHandler"> }
-
-// Ключевые слова логических операций: НЕ/NOT, И/AND, ИЛИ/OR
-kwNot { @specialize<Identifier, "НЕ"> | @specialize<Identifier, "NOT"> }
-kwAnd { @specialize<Identifier, "И"> | @specialize<Identifier, "AND"> }
-kwOr { @specialize<Identifier, "ИЛИ"> | @specialize<Identifier, "OR"> }
-// Ключевое слово Новый/New (создание объекта)
-kwNew { @specialize<Identifier, "Новый"> | @specialize<Identifier, "New"> }
-
-// Литералы булевых и специальных значений:
-// Истина/True (булево истина), Ложь/False (булево ложь),
-// Неопределено/Undefined (неопределенное значение), Null (пустое значение)
-kwTrue { @specialize<Identifier, "Истина"> | @specialize<Identifier, "True"> }
-kwFalse { @specialize<Identifier, "Ложь"> | @specialize<Identifier, "False"> }
-kwUndefined { @specialize<Identifier, "Неопределено"> | @specialize<Identifier, "Undefined"> }
-kwNull { @specialize<Identifier, "Null"> }
+// Оператор сравнения: базовое правило для операций сравнения
+CompareOp<expr> { expr }
 
 @detectDelim
 

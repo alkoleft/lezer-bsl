@@ -24,8 +24,11 @@ function walkTree(cursor: ReturnType<Tree['cursor']>, source: string, indent: nu
     const hasChildren = cursor.firstChild()
     const expandable = hasChildren ? 'expandable' : ''
     const expandIcon = hasChildren ? '▼' : '•'
+    // Проверяем, является ли узел ошибочным
+    const isError = name === '⚠'
+    const errorClass = isError ? 'error-node' : ''
     
-    html += `<div class="tree-node ${expandable}" data-from="${from}" data-to="${to}">
+    html += `<div class="tree-node ${expandable} ${errorClass}" data-from="${from}" data-to="${to}">
       ${indentStr}<span class="expand-icon">${expandIcon}</span>
       <span class="node-name">${name}</span>
       <span class="node-range">[${from}:${to}]</span>
@@ -80,10 +83,14 @@ function initApp() {
       }
       
       // Добавляем обработчики для сворачивания/разворачивания узлов
-      const expandableNodes = treeOutput.querySelectorAll('.expandable')
-      expandableNodes.forEach(node => {
-        node.addEventListener('click', (e) => {
+      // Сворачивание только при клике на node-name
+      const nodeNames = treeOutput.querySelectorAll('.expandable .node-name')
+      nodeNames.forEach(nodeName => {
+        nodeName.addEventListener('click', (e) => {
           e.stopPropagation()
+          const node = nodeName.parentElement
+          if (!node) return
+          
           const children = node.nextElementSibling as HTMLDivElement
           if (children && children.classList.contains('tree-children')) {
             const isExpanded = children.style.display !== 'none'
@@ -93,6 +100,28 @@ function initApp() {
               icon.textContent = isExpanded ? '▶' : '▼'
             }
           }
+        })
+      })
+      
+      // Добавляем обработчики для выделения текста при клике на node-range
+      const nodeRanges = treeOutput.querySelectorAll('.node-range')
+      nodeRanges.forEach(nodeRange => {
+        nodeRange.addEventListener('click', (e) => {
+          e.stopPropagation()
+          const node = nodeRange.parentElement
+          if (!node) return
+          
+          const from = parseInt(node.getAttribute('data-from') || '0')
+          const to = parseInt(node.getAttribute('data-to') || '0')
+          
+          // Выделяем текст в редакторе
+          codeInput.focus()
+          codeInput.setSelectionRange(from, to)
+          
+          // Прокручиваем к выделенному фрагменту
+          const lineHeight = parseInt(window.getComputedStyle(codeInput).lineHeight)
+          const linesBeforeCursor = codeInput.value.substring(0, from).split('\n').length
+          codeInput.scrollTop = (linesBeforeCursor - 1) * lineHeight - codeInput.clientHeight / 2
         })
       })
     } catch (error) {

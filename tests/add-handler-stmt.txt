@@ -1,0 +1,87 @@
+# Простой оператор ДобавитьОбработчик
+ДобавитьОбработчик событие, обработчик;
+==>
+Module(AddHandlerStmt(Event(VariableName),Handler(VariableName)))
+
+# Оператор ДобавитьОбработчик с вызовом метода в обработчике
+ДобавитьОбработчик событие, ОбработчикСобытия();
+==>
+Module(AddHandlerStmt(
+  Event(VariableName),
+  Handler(CallExpr(...))))
+
+# Оператор ДобавитьОбработчик с методом объекта в обработчике
+ДобавитьОбработчик "событие", Объект.Метод();
+==>
+Module(AddHandlerStmt(
+  Event(String),
+  Handler(CallExpr(...))))
+
+# Оператор ДобавитьОбработчик с методом объекта в событии
+ДобавитьОбработчик Объект.Событие, обработчик;
+==>
+Module(AddHandlerStmt(
+  Event(MemberExpr(...)),
+  Handler(VariableName)))
+
+# Оператор ДобавитьОбработчик на английском
+AddHandler event, handler;
+==>
+Module(AddHandlerStmt(Event(VariableName),Handler(VariableName)))
+
+# Оператор ДобавитьОбработчик с полным доступом к свойствам
+ДобавитьОбработчик Объект.Событие, Объект.Обработчик();
+==>
+Module(AddHandlerStmt(
+  Event(MemberExpr(...)),
+  Handler(CallExpr(...))))
+
+# Оператор ДобавитьОбработчик с элементом массива
+ДобавитьОбработчик массив[0], обработчик;
+==>
+Module(AddHandlerStmt(
+  Event(MemberExpr(...)),
+  Handler(VariableName)))
+
+# Оператор ДобавитьОбработчик в условном операторе
+Если условие Тогда
+  ДобавитьОбработчик событие, обработчик;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(...),
+  Block(AddHandlerStmt(Event(VariableName),Handler(VariableName)))))
+
+# Оператор ДобавитьОбработчик в цикле
+Пока Истина Цикл
+  ДобавитьОбработчик событие, обработчик;
+КонецЦикла;
+==>
+Module(WhileStmt(
+  Condition(True),
+  Block(AddHandlerStmt(Event(VariableName),Handler(VariableName)))))
+
+# Оператор ДобавитьОбработчик внутри процедуры
+Процедура Тест()
+  ДобавитьОбработчик событие, обработчик;
+КонецПроцедуры
+==>
+Module(ProcedureDef(Name,ParamList,Block(
+  AddHandlerStmt(Event(VariableName),Handler(VariableName)))))
+
+# Оператор ДобавитьОбработчик с несколькими добавлениями
+ДобавитьОбработчик событие1, обработчик1;
+ДобавитьОбработчик событие2, обработчик2;
+ДобавитьОбработчик событие3, обработчик3;
+==>
+Module(
+  AddHandlerStmt(Event(VariableName),Handler(VariableName)),
+  AddHandlerStmt(Event(VariableName),Handler(VariableName)),
+  AddHandlerStmt(Event(VariableName),Handler(VariableName)))
+
+# Оператор ДобавитьОбработчик с цепочкой вызовов
+ДобавитьОбработчик Объект.Метод().Событие, обработчик;
+==>
+Module(AddHandlerStmt(
+  Event(MemberExpr(...)),
+  Handler(VariableName)))

@@ -96,12 +96,13 @@
         padding: 2px 0;
       }
 
-      .tree-node.expandable {
+      .tree-node.expandable .node-name {
         cursor: pointer;
       }
 
-      .tree-node.expandable:hover {
+      .tree-node.expandable .node-name:hover {
         background-color: #2a2d2e;
+        text-decoration: underline;
       }
 
       .expand-icon {
@@ -115,17 +116,45 @@
         color: #4ec9b0;
         font-weight: 600;
         margin-right: 8px;
+        padding: 2px 4px;
+        border-radius: 3px;
       }
 
       .node-range {
         color: #569cd6;
         margin-right: 8px;
         font-size: 11px;
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: 3px;
+        transition: background-color 0.15s ease;
+      }
+
+      .node-range:hover {
+        background-color: #264f78;
+        text-decoration: underline;
       }
 
       .node-text {
         color: #ce9178;
         font-style: italic;
+      }
+
+      /* Стили для ошибочных узлов */
+      .tree-node.error-node {
+        background-color: #3a1f1f;
+        border-left: 3px solid #f48771;
+        padding-left: 8px;
+        margin: 2px 0;
+      }
+
+      .tree-node.error-node .node-name {
+        color: #f48771;
+        font-weight: bold;
+      }
+
+      .tree-node.error-node .node-range {
+        color: #f48771;
       }
 
       .tree-children {
@@ -182,11 +211,28 @@
           <textarea id="code-input" class="code-editor" placeholder="Введите код BSL здесь...">
 &НаКлиенте
 Перем А Экспорт;
+
 // Комментарий
 &НаСервере
 Функция Функция1(Знач Операнд1, Знач Операнд2 = 0)
-  Возврат Операнд1 + Операнд2;
+  Возврат Операнд1[0] + Abs(Операнд2[1+1]);
 КонецФункции
+
+Процедура Процедура2()
+  Для Инд = 1 По 10 Цикл
+    Сообщить(Инд);
+  КонецЦикла;
+КонецПроцедуры
+
+Процедура Процедура3(Коллекция)
+  Для каждого Элемент Из Коллекция Цикл
+    Сообщить(Элемент);
+  КонецЦикла;
+КонецПроцедуры
+
+Процедура Процедура4()
+  a = b.Abs(10 + 11);
+КонецПроцедуры
 
 Процедура Процедура2()
   а = 1 + 2 * 3;

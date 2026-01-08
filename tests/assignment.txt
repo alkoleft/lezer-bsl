@@ -1,0 +1,246 @@
+# Простое присваивание числа
+а = 1;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание строки
+строка = "Привет";
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание булева значения
+флаг = Истина;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание неопределенного значения
+переменная = Неопределено;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата арифметического выражения
+сумма = 1 + 2;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата сложного выражения
+результат = 1 + 2 * 3 - 4;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание с унарным оператором
+отрицательное = -5;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание с логическим НЕ
+инвертированное = НЕ Ложь;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата вызова функции
+значение = Функция1();
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата вызова функции с параметрами
+результат = Сумма(1, 2);
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание значения свойства объекта
+объект.Свойство = 10;
+==>
+Module(
+  AssignmentStmt(VariableName,PropertyName,Expression(...))
+)
+
+# Присваивание элемента массива
+массив[0] = 5;
+==>
+Module(
+  AssignmentStmt(VariableName,Index(...),Expression(...))
+)
+
+# Присваивание с цепочкой доступа
+объект.Свойство.ПодСвойство = 20;
+==>
+Module(
+  AssignmentStmt(VariableName,PropertyName,PropertyName,Expression(...))
+)
+
+# Присваивание результата метода объекта
+результат = Объект.Метод();
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата метода с параметрами
+значение = Объект.Метод(1, 2);
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание элемента массива по индексу
+элемент = массив[индекс];
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата создания нового объекта
+объект = Новый Структура;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата создания объекта с параметрами
+объект = Новый(Тип, Параметр1, Параметр2);
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата сравнения
+больше = а > 0;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата логического выражения
+результат = Истина И Ложь;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата тернарного выражения
+значение = ?(условие, 1, 0);
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание с выражением в скобках
+результат = (1 + 2) * 3;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание конкатенации строк
+текст = "Привет" + " " + "Мир";
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата сложного выражения с доступом
+результат = Объект.Свойство + 10;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание результата вызова метода с доступом к свойству
+значение = Объект.Метод().Свойство;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание элемента массива по выражению
+элемент = массив[индекс + 1];
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание дробного числа
+дробное = 3.14;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание даты
+дата = '20240101';
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Присваивание Null
+значение = Null;
+==>
+Module(
+  AssignmentStmt(VariableName,Expression(...))
+)
+
+# Множественные присваивания
+а = 1;
+б = 2;
+в = 3;
+==>
+Module(
+    AssignmentStmt(VariableName,Expression(...)),
+    AssignmentStmt(VariableName,Expression(...)),
+    AssignmentStmt(VariableName,Expression(...)))
+
+# Присваивание внутри процедуры
+Процедура Тест()
+  а = 1;
+КонецПроцедуры
+==>
+Module(ProcedureDef(Name,ParamList,Block(
+    AssignmentStmt(VariableName,Expression(...)))))
+
+# Присваивание внутри функции
+Функция Сумма()
+  результат = 1 + 2;
+  Возврат результат;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Block(
+    AssignmentStmt(VariableName,Expression(...)),
+    ReturnStmt(Expression(VariableName)))))
+
+# Присваивание в условном операторе
+Если Истина Тогда
+  а = 1;
+КонецЕсли;
+==>
+Module(IfStmt(Condition(True),Block(
+    AssignmentStmt(VariableName,Expression(Number)))))
+
+# Присваивание в цикле
+Пока Истина Цикл
+  счетчик = счетчик + 1;
+КонецЦикла;
+==>
+Module(WhileStmt(Condition(True),Block(
+  AssignmentStmt(VariableName,Expression(...)))))

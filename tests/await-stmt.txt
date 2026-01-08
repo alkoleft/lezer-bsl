@@ -1,0 +1,98 @@
+# Простой оператор Ждать с вызовом функции
+Ждать АсинхМетод();
+==>
+Module(
+  AwaitStmt(
+    AwaitExpr(CallExpr(...))))
+
+# Оператор Ждать с вызовом функции с параметрами
+Ждать АсинхМетод(параметр1, параметр2);
+==>
+Module(
+  AwaitStmt(
+    AwaitExpr(CallExpr(...))))
+
+# Оператор Ждать с методом объекта
+Ждать Объект.АсинхМетод();
+==>
+Module(
+  AwaitStmt(
+    AwaitExpr(CallExpr(...))))
+
+# Оператор Ждать на английском
+Await AsyncMethod();
+==>
+Module(
+  AwaitStmt(
+    AwaitExpr(CallExpr(...))))
+
+# Оператор Ждать с цепочкой вызовов
+Ждать Объект.Метод1().Метод2();
+==>
+Module(
+  AwaitStmt(
+    AwaitExpr(CallExpr(
+      MemberExpr(CallExpr(...),PropertyName),ArgList()))))
+
+# Оператор Ждать с переменной
+Ждать переменная;
+==>
+Module(
+  AwaitStmt(
+    AwaitExpr(VariableName)))
+
+# Оператор Ждать с выражением
+Ждать переменная + 1;
+==>
+Module(
+  AwaitStmt(
+    AwaitExpr(BinaryExpr(...))))
+
+# Оператор Ждать внутри асинхронной функции
+Асинх Функция Тест()
+  Ждать АсинхМетод();
+КонецФункции
+==>
+Module(FunctionDef(Async,Name,ParamList,Block(
+  AwaitStmt(
+    AwaitExpr(CallExpr(...))))))
+
+# Оператор Ждать в условном операторе
+Если условие Тогда
+  Ждать АсинхМетод();
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(...),
+  Block(
+    AwaitStmt(AwaitExpr(CallExpr(...))))))
+
+# Оператор Ждать в цикле
+Пока Истина Цикл
+  Ждать АсинхМетод();
+КонецЦикла;
+==>
+Module(WhileStmt(
+  Condition(...),
+  Block(
+    AwaitStmt(AwaitExpr(CallExpr(...))))))
+
+# Оператор Ждать с результатом
+результат = Ждать АсинхМетод();
+==>
+Module(AssignmentStmt(
+  VariableName,
+  Expression(
+    AwaitExpr(CallExpr(...)))))
+
+# Оператор Ждать в блоке обработки исключений
+Попытка
+  Ждать АсинхМетод();
+Исключение
+  Сообщить("Ошибка");
+КонецПопытки;
+==>
+Module(TryStmt(
+  Block(
+    AwaitStmt(AwaitExpr(CallExpr(...)))),
+  Block(CallStmt(...))))

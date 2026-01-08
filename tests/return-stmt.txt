@@ -1,0 +1,145 @@
+# Простой оператор Возврат без значения
+Возврат;
+==>
+Module(
+  ReturnStmt)
+
+# Оператор Возврат с числом
+Возврат 1;
+==>
+Module(
+  ReturnStmt(Expression(...)))
+
+# Оператор Возврат со строкой
+Возврат "Привет";
+==>
+Module(
+  ReturnStmt(Expression(...)))
+
+# Оператор Возврат с переменной
+Возврат результат;
+==>
+Module(
+  ReturnStmt(Expression(...)))
+
+# Оператор Возврат с выражением
+Возврат 1 + 2;
+==>
+Module(
+  ReturnStmt(...))
+
+# Оператор Возврат с вызовом функции
+Возврат Функция1();
+==>
+Module(
+  ReturnStmt(Expression(...)))
+
+# Оператор Возврат с вызовом функции с параметрами
+Возврат Сумма(1, 2);
+==>
+Module(
+  ReturnStmt(Expression(...)))
+
+# Оператор Возврат на английском
+Return;
+==>
+Module(
+  ReturnStmt)
+
+# Оператор Возврат на английском со значением
+Return 1;
+==>
+Module(
+  ReturnStmt(Expression(...)))
+
+# Оператор Возврат внутри функции
+Функция Сумма()
+  Возврат 1 + 2;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Block(
+  ReturnStmt(Expression(...)))))
+
+# Оператор Возврат в условном операторе
+Если условие Тогда
+  Возврат 1;
+Иначе
+  Возврат 0;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(...),
+  Block(
+    ReturnStmt(Expression(...))),
+  ElseClause(Block(
+    ReturnStmt(Expression(...))))))
+
+# Оператор Возврат в цикле
+Пока Истина Цикл
+  Возврат 1;
+КонецЦикла;
+==>
+Module(WhileStmt(
+  Condition(...),
+  Block(ReturnStmt(Expression(...)))))
+
+# Оператор Возврат с методом объекта
+Возврат Объект.Метод();
+==>
+Module(
+  ReturnStmt(Expression(...)))
+
+# Оператор Возврат с тернарным выражением
+Возврат ?(условие, 1, 0);
+==>
+Module(
+  ReturnStmt(Expression(TernaryExpr(...))))
+
+# Оператор Возврат с логическим выражением
+Возврат Истина И Ложь;
+==>
+Module(
+  ReturnStmt(Expression(...)))
+
+# Оператор Возврат в блоке обработки исключений
+Попытка
+  Возврат 1;
+Исключение
+  Возврат 0;
+КонецПопытки;
+==>
+Module(TryStmt(
+  Block(ReturnStmt(Expression(...))),
+  Block(ReturnStmt(Expression(...)))))
+
+# Оператор Возврат с созданием объекта
+Возврат Новый Структура;
+==>
+Module(
+  ReturnStmt(Expression(NewExpr(...))))
+
+# Оператор Возврат с доступом к свойству
+Возврат Объект.Свойство;
+==>
+Module(
+  ReturnStmt(Expression(MemberExpr(...))))
+
+# Оператор Возврат с элементом массива
+Возврат массив[0];
+==>
+Module(
+  ReturnStmt(Expression(MemberExpr(...))))
+
+# Оператор Возврат с унарным оператором
+Возврат -5;
+==>
+Module(
+  ReturnStmt(Expression(UnaryExpr(...))))
+
+# Оператор Возврат в процедуре
+Процедура Тест()
+  Возврат;
+КонецПроцедуры
+==>
+Module(ProcedureDef(Name,ParamList,Block(
+  ReturnStmt)))

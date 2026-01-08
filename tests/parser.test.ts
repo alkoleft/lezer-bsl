@@ -14,7 +14,7 @@ describe("LezerBslParser", () => {
 
       const text = tree.toString()
       expect(text).toContain("ProcedureDef")
-      expect(text).toContain("Identifier")
+      expect(text).toContain("Name")
     })
 
     test("парсит процедуру с EN ключевыми словами", () => {
@@ -22,7 +22,7 @@ describe("LezerBslParser", () => {
 
       const text = tree.toString()
       expect(text).toContain("ProcedureDef")
-      expect(text).toContain("Identifier")
+      expect(text).toContain("Name")
     })
 
     test("парсит функцию", () => {
@@ -62,30 +62,31 @@ describe("LezerBslParser", () => {
       const tree = parser.parse("Процедура Тест()\n  а = 1;\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("Assignment")
+      expect(text).toContain("AssignmentStmt")
     })
 
     test("парсит бинарные выражения", () => {
       const tree = parser.parse("Процедура Тест()\n  а = 1 + 2 * 3;\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("AddExpr")
-      expect(text).toContain("MulExpr")
+      expect(text).toContain("BinaryExpr")
+      expect(text).toContain("AssignmentStmt")
     })
 
     test("парсит логические выражения", () => {
       const tree = parser.parse("Процедура Тест()\n  Если а И б Или в Тогда\n  КонецЕсли;\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("AndExpr")
-      expect(text).toContain("OrExpr")
+      expect(text).toContain("BinaryExpr")
+      expect(text).toContain("IfStmt")
     })
 
     test("парсит выражения сравнения", () => {
       const tree = parser.parse("Процедура Тест()\n  Если а > 0 Тогда\n  КонецЕсли;\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("CompareExpr")
+      expect(text).toContain("BinaryExpr")
+      expect(text).toContain("IfStmt")
     })
 
     test("парсит унарные выражения", () => {
@@ -93,27 +94,32 @@ describe("LezerBslParser", () => {
 
       const text = tree.toString()
       expect(text).toContain("UnaryExpr")
+      expect(text).toContain("NOT")
+      expect(text).toContain("AssignmentStmt")
     })
 
     test("парсит вызов метода", () => {
       const tree = parser.parse("Процедура Тест()\n  Результат = Метод(1, 2);\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("CallArgs")
+      expect(text).toContain("CallExpr")
+      expect(text).toContain("ArgList")
     })
 
     test("парсит доступ к свойству", () => {
       const tree = parser.parse("Процедура Тест()\n  Результат = Объект.Свойство;\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("MemberAccess")
+      expect(text).toContain("MemberExpr")
+      expect(text).toContain("PropertyName")
     })
 
     test("парсит индексацию", () => {
       const tree = parser.parse("Процедура Тест()\n  Элемент = Массив[0];\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("IndexAccess")
+      expect(text).toContain("MemberExpr")
+      expect(text).toContain("Index")
     })
 
     test("парсит создание объекта", () => {
@@ -127,7 +133,8 @@ describe("LezerBslParser", () => {
       const tree = parser.parse("Процедура Тест()\n  а = (1 + 2) * 3;\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("ParenExpr")
+      expect(text).toContain("BinaryExpr")
+      expect(text).toContain("AssignmentStmt")
     })
   })
 
@@ -150,8 +157,9 @@ describe("LezerBslParser", () => {
       const tree = parser.parse("Процедура Тест()\n  а = Истина;\n  б = Ложь;\nКонецПроцедуры")
 
       const text = tree.toString()
-      // Специализированные токены kwTrue/kwFalse представлены как Literal в дереве
-      expect(text).toContain("Literal")
+      // Специализированные токены представлены как True/False в дереве
+      expect(text).toContain("True")
+      expect(text).toContain("False")
       expect(text).toContain("ProcedureDef")
     })
 
@@ -159,8 +167,8 @@ describe("LezerBslParser", () => {
       const tree = parser.parse("Процедура Тест()\n  а = Неопределено;\nКонецПроцедуры")
 
       const text = tree.toString()
-      // Специализированный токен kwUndefined представлен как Literal в дереве
-      expect(text).toContain("Literal")
+      // Специализированный токен представлен как Undefined в дереве
+      expect(text).toContain("Undefined")
       expect(text).toContain("ProcedureDef")
     })
   })
@@ -207,7 +215,7 @@ describe("LezerBslParser", () => {
       const tree = parser.parse("Процедура Тест()\n  Для Каждого Элемент Из Коллекция Цикл\n  КонецЦикла;\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("ForStmt")
+      expect(text).toContain("ForEachStmt")
     })
   })
 
@@ -319,7 +327,8 @@ describe("LezerBslParser", () => {
 
       const after = "Процедура Тест()\n  а = 1 + 2;\nКонецПроцедуры"
       const tree = parser.update(after, [{ rangeOffset: 23, rangeLength: 0, text: " + 2" }])
-      expect(tree.toString()).toContain("AddExpr")
+      expect(tree.toString()).toContain("BinaryExpr")
+      expect(tree.toString()).toContain("AssignmentStmt")
     })
 
     test("обновляет дерево при удалении", () => {
@@ -425,24 +434,26 @@ describe("LezerBslParser", () => {
       const tree = parser.parse("Процедура Тест()\n  а = 1 + 2 * 3 - 4 / 2;\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("AddExpr")
-      expect(text).toContain("MulExpr")
+      expect(text).toContain("BinaryExpr")
+      expect(text).toContain("AssignmentStmt")
     })
 
     test("парсит цепочку вызовов методов", () => {
       const tree = parser.parse("Процедура Тест()\n  Результат = Объект.Метод1().Метод2();\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("MemberAccess")
-      expect(text).toContain("CallArgs")
+      expect(text).toContain("MemberExpr")
+      expect(text).toContain("CallExpr")
+      expect(text).toContain("ArgList")
     })
 
     test("парсит доступ к вложенным свойствам и индексам", () => {
       const tree = parser.parse("Процедура Тест()\n  Элемент = Массив[0].Свойство[1];\nКонецПроцедуры")
 
       const text = tree.toString()
-      expect(text).toContain("IndexAccess")
-      expect(text).toContain("MemberAccess")
+      expect(text).toContain("MemberExpr")
+      expect(text).toContain("Index")
+      expect(text).toContain("PropertyName")
     })
   })
 })

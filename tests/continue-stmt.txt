@@ -1,0 +1,93 @@
+# Простой оператор Продолжить
+Continue;
+==>
+Module(ContinueStmt)
+
+# Оператор Продолжить в цикле пока
+Пока Истина Цикл
+  Continue;
+КонецЦикла;
+==>
+Module(WhileStmt(
+  Condition(...),
+  Block(ContinueStmt)))
+
+# Оператор Продолжить в цикле для
+Для а = 1 По 10 Цикл
+  Continue;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(...),
+  End(...),
+  Block(ContinueStmt)))
+
+# Оператор Продолжить в цикле для каждого
+Для Каждого элемент Из коллекция Цикл
+  Continue;
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(...),
+  Block(ContinueStmt)))
+
+# Оператор Продолжить с условием
+Пока Истина Цикл
+  Если условие Тогда
+    Continue;
+  КонецЕсли;
+КонецЦикла;
+==>
+Module(WhileStmt(
+  Condition(...),
+  Block(IfStmt(
+    Condition(...),
+    Block(ContinueStmt)))))
+
+# Оператор Продолжить во вложенном цикле
+Для а = 1 По 10 Цикл
+  Для б = 1 По 10 Цикл
+    Continue;
+  КонецЦикла;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(...),
+  End(...),
+  Block(ForStmt(
+    VariableName,
+    Start(...),
+    End(...),
+    Block(ContinueStmt)))))
+
+# Оператор Продолжить с операторами до него
+Пока Истина Цикл
+  а = 1;
+  Continue;
+  б = 2;
+КонецЦикла;
+==>
+Module(WhileStmt(
+  Condition(...),
+  Block(
+    AssignmentStmt(...),
+    ContinueStmt,
+    AssignmentStmt(...))))
+
+# Оператор Продолжить в блоке обработки исключений
+Пока Истина Цикл
+  Попытка
+    Continue;
+  Исключение
+    Сообщить("Ошибка");
+  КонецПопытки;
+КонецЦикла;
+==>
+Module(WhileStmt(
+  Condition(...),
+  Block(TryStmt(
+    Block(ContinueStmt),
+    Block(...)))))

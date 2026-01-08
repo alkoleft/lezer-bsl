@@ -1,0 +1,138 @@
+# Простой условный оператор
+Если Истина Тогда
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(True),
+  Block()))
+
+# Условный оператор с блоком
+Если Истина Тогда
+  а = 1;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(True),
+  Block(AssignmentStmt(...))))
+
+# Условный оператор с Иначе
+Если Истина Тогда
+  а = 1;
+Иначе
+  а = 2;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(True),
+  Block(AssignmentStmt(...)),
+  ElseClause(Block(
+    AssignmentStmt(...)))))
+
+# Условный оператор с ИначеЕсли
+Если а > 0 Тогда
+  а = 1;
+ИначеЕсли а < 0 Тогда
+  а = -1;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(...),
+  Block(AssignmentStmt(...)),
+  ElseIfClause(
+    Condition(BinaryExpr(...)),
+    Block(AssignmentStmt(...)))))
+
+# Условный оператор с несколькими ИначеЕсли и Иначе
+Если а > 0 Тогда
+  результат = 1;
+ИначеЕсли а = 0 Тогда
+  результат = 0;
+ИначеЕсли а < 0 Тогда
+  результат = -1;
+Иначе
+  результат = Неопределено;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(...),
+  Block(...),
+  ElseIfClause(
+    Condition(...),
+    Block(...)),
+  ElseIfClause(
+    Condition(...),
+    Block(...)),
+  ElseClause(Block(...))))
+
+# Условный оператор с логическим выражением
+Если а > 0 И б < 10 Тогда
+  результат = Истина;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(BinaryExpr(
+    BinaryExpr(VariableName,CompareOp,Number),
+    LogicOp(AND),
+    BinaryExpr(VariableName,CompareOp,Number))),
+  Block(...)))
+
+# Условный оператор с вызовом функции в условии
+Если Функция1() Тогда
+  результат = 1;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(CallExpr(...)),
+  Block(...)))
+
+# Условный оператор с вложенными операторами
+Если Истина Тогда
+  а = 1;
+  б = 2;
+  в = 3;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(...),
+  Block(
+AssignmentStmt(...),
+AssignmentStmt(...),
+AssignmentStmt(...))))
+
+# Условный оператор с английскими ключевыми словами
+If True Then
+  a = 1;
+EndIf;
+==>
+Module(IfStmt(Condition(True),
+  Block(AssignmentStmt(...))))
+
+# Условный оператор с ElseIf и Else на английском
+If a > 0 Then
+  result = 1;
+ElseIf a < 0 Then
+  result = -1;
+Else
+  result = 0;
+EndIf;
+==>
+Module(IfStmt(
+  Condition(BinaryExpr(...)),
+  Block(AssignmentStmt(...)),
+  ElseIfClause(
+    Condition(...),
+    Block(AssignmentStmt(...))),
+  ElseClause(Block(AssignmentStmt(...)))))
+
+# Вложенный условный оператор
+Если Истина Тогда
+  Если Истина Тогда
+    а = 1;
+  КонецЕсли;
+КонецЕсли;
+==>
+Module(IfStmt(
+  Condition(...),
+  Block(IfStmt(
+    Condition(...),
+    Block(AssignmentStmt(...))))))

@@ -1,37 +1,50 @@
 # Комментарий в начале строки
 // Это комментарий
-1;
+Возврат 1;
 ==>
-Module(LineComment,Statement(...))
+Module(
+  LineComment,
+  ReturnStmt(...))
 
 # Комментарий в конце строки
-1; // Комментарий после кода
+Возврат 1; // Комментарий после кода
 ==>
-Module(Statement(...),LineComment)
+Module(
+  ReturnStmt(...),
+  LineComment)
 
 # Комментарий перед выражением
 // Комментарий перед кодом
-1;
-==>
-Module(LineComment,Statement(...))
-
-# Комментарий между выражениями
-1;
-// Комментарий между выражениями
-2;
+Возврат 1;
 ==>
 Module(
-  Statement(...),
   LineComment,
-  Statement(...))
+  ReturnStmt(...))
+
+# Комментарий между выражениями
+Возврат 1;
+// Комментарий между выражениями
+Возврат 2;
+==>
+Module(
+  ReturnStmt(...),
+  LineComment,
+  ReturnStmt(...))
 
 # Комментарий внутри процедуры
 Процедура Тест()
   // Комментарий внутри процедуры
   а = 1;
+  // Комментарий внутри процедуры
+  а = 1;
 КонецПроцедуры
 ==>
-Module(MethodDef(ProcedureDef(Identifier, ParamList, LineComment, Block(Statement(Assignment(...))))))
+Module(ProcedureDef(Name,ParamList,
+  LineComment,
+  Block(
+    AssignmentStmt(...),
+    LineComment,
+    AssignmentStmt(...))))
 
 # Комментарий перед возвратом
 Функция Сумма()
@@ -39,21 +52,23 @@ Module(MethodDef(ProcedureDef(Identifier, ParamList, LineComment, Block(Statemen
   Возврат 1;
 КонецФункции
 ==>
-Module(MethodDef(FunctionDef(Identifier, ParamList, LineComment, Block(Statement(ReturnStmt(Expression(...)))))))
+Module(FunctionDef(Name,ParamList,
+  LineComment,
+  Block(...)))
 
 # Множественные комментарии
 // Первый комментарий
 // Второй комментарий
-1;
+Возврат 1;
 // Третий комментарий
-2;
+Возврат 2;
 ==>
 Module(
   LineComment,
   LineComment,
-  Statement(...),
+  ReturnStmt(...),
   LineComment,
-  Statement(...))
+  ReturnStmt(...))
 
 # Комментарий перед условным оператором
 Если Истина Тогда
@@ -61,15 +76,23 @@ Module(
   а = 1;
 КонецЕсли;
 ==>
-Module(Statement(IfStmt(Expression(...), LineComment, Block(Statement(Assignment(...))))))
+Module(
+  IfStmt(
+    Condition(...),
+    LineComment,
+    Block(...)))
 
 # Комментарий с выражением, содержащим деление
-1 / 2; // Комментарий после деления
+Возврат 1 / 2; // Комментарий после деления
 ==>
-Module(Statement(...),LineComment)
+Module(
+  ReturnStmt(...),
+  LineComment)
 
 # Пустой комментарий
 // 
-1;
+Возврат 1;
 ==>
-Module(LineComment,Statement(...))
+Module(
+  LineComment,
+  ReturnStmt(...))

@@ -1,0 +1,109 @@
+# Простая метка
+~метка:;
+==>
+Module(LabelStmt(LabelName))
+
+# Метка на английском
+~label:;
+==>
+Module(LabelStmt(LabelName))
+
+# Метка с оператором после неё
+~метка:;
+а = 1;
+==>
+Module(
+  LabelStmt(LabelName),
+  AssignmentStmt(...))
+
+# Метка с переходом к ней
+Перейти ~метка;
+~метка:;
+==>
+Module(
+  GotoStmt(LabelName),
+  LabelStmt(LabelName))
+
+# Метка в цикле
+~начало:;
+Пока Истина Цикл
+  Перейти ~начало;
+КонецЦикла;
+==>
+Module(
+  LabelStmt(LabelName),
+  WhileStmt(
+    Condition(...),
+    Block(GotoStmt(LabelName))))
+
+# Метка в условном операторе
+Если условие Тогда
+  Перейти ~метка;
+КонецЕсли;
+~метка:;
+==>
+Module(
+  IfStmt(
+    Condition(...),
+    Block(GotoStmt(LabelName))),
+  LabelStmt(LabelName))
+
+# Несколько меток
+~метка1:;
+~метка2:;
+~метка3:;
+==>
+Module(
+  LabelStmt(LabelName),
+  LabelStmt(LabelName),
+  LabelStmt(LabelName))
+
+# Метка с блоком кода после неё
+~метка:;
+а = 1;
+б = 2;
+в = 3;
+==>
+Module(
+  LabelStmt(LabelName),
+  AssignmentStmt(...),
+  AssignmentStmt(...),
+  AssignmentStmt(...))
+
+# Метка внутри процедуры
+Процедура Тест()
+  ~метка:;
+  а = 1;
+КонецПроцедуры
+==>
+Module(ProcedureDef(Name,ParamList,Block(
+  LabelStmt(LabelName),
+  AssignmentStmt(...))))
+
+# Метка внутри функции
+Функция Тест()
+  ~метка:;
+  Возврат 1;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Block(
+  LabelStmt(LabelName),
+  ReturnStmt(...))))
+
+# Метка с переходом из разных мест
+Если условие1 Тогда
+  Перейти ~метка;
+КонецЕсли;
+Если условие2 Тогда
+  Перейти ~метка;
+КонецЕсли;
+~метка:;
+==>
+Module(
+IfStmt(
+    Condition(...),
+    Block(GotoStmt(LabelName))),
+IfStmt(
+    Condition(...),
+    Block(GotoStmt(LabelName))),
+LabelStmt(LabelName))

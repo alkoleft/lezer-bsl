@@ -1,0 +1,113 @@
+# Простой цикл для каждого
+Для Каждого элемент Из коллекция Цикл
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block()))
+
+# Цикл для каждого с блоком
+Для Каждого элемент Из коллекция Цикл
+  сумма = сумма + элемент;
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block(AssignmentStmt(
+    VariableName,
+    Expression(BinaryExpr(...))))))
+
+# Цикл для каждого с массивом
+Для Каждого элемент Из массив Цикл
+  Сообщить(элемент);
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block(CallStmt(...))))
+
+# Цикл для каждого с выражением коллекции
+Для Каждого элемент Из Функция1() Цикл
+  результат = результат + элемент;
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(CallExpr(...)),
+  Block(...)))
+
+# Цикл для каждого с несколькими операторами
+Для Каждого элемент Из коллекция Цикл
+  сумма = сумма + элемент;
+  счетчик = счетчик + 1;
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...))))
+
+# Цикл для каждого с доступом к свойству
+Для Каждого элемент Из коллекция Цикл
+  значение = элемент.Свойство;
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block(
+    AssignmentStmt(...))))
+
+# Цикл для каждого на английском
+For Each item In collection Do
+  sum = sum + item;
+EndDo;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block(AssignmentStmt(...))))
+
+# Цикл для каждого с условным оператором
+Для Каждого элемент Из коллекция Цикл
+  Если элемент > 0 Тогда
+    результат = результат + элемент;
+  КонецЕсли;
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block(IfStmt(
+    Condition(...),
+    Block(AssignmentStmt(...))))))
+
+# Вложенный цикл для каждого
+Для Каждого элемент1 Из коллекция1 Цикл
+  Для Каждого элемент2 Из коллекция2 Цикл
+    результат = результат + элемент1 * элемент2;
+  КонецЦикла;
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block(ForEachStmt(
+    VariableName,
+    Collection(VariableName),
+    Block(...)))))
+
+# Цикл для каждого с методом объекта
+Для Каждого элемент Из объект.Метод() Цикл
+  Сообщить(элемент);
+КонецЦикла;
+==>
+Module(ForEachStmt(
+  VariableName,
+  Collection(CallExpr(...)),
+  Block(CallStmt(...))))

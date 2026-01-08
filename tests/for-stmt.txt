@@ -1,0 +1,121 @@
+# Простой цикл для
+Для а = 1 По 10 Цикл
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(Number),
+  End(Number),
+  Block()))
+
+# Цикл для с блоком
+Для а = 1 По 10 Цикл
+  сумма = сумма + а;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(Number),
+  End(Number),
+  Block(AssignmentStmt(...))))
+
+# Цикл для с переменными в границах
+Для а = начало По конец Цикл
+  результат = результат + а;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(VariableName),
+  End(VariableName),
+  Block(AssignmentStmt(...))))
+
+# Цикл для с выражениями в границах
+Для а = 0 По счетчик - 1 Цикл
+  массив[а] = 0;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(Number),
+  End(BinaryExpr(...)),
+  Block(AssignmentStmt(...))))
+
+# Цикл для с несколькими операторами
+Для а = 1 По 10 Цикл
+  сумма = сумма + а;
+  произведение = произведение * а;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(Number),
+  End(Number),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...))))
+
+# Цикл для с вызовом функции в границах
+Для а = 1 По Функция1() Цикл
+  результат = результат + а;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(Number),
+  End(CallExpr(...)),
+  Block(AssignmentStmt(...))))
+
+# Цикл для на английском
+For a = 1 To 10 Do
+  sum = sum + a;
+EndDo;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(Number),
+  End(Number),
+  Block(AssignmentStmt(...))))
+
+# Цикл для с отрицательными значениями
+Для а = -10 По -1 Цикл
+  результат = результат + а;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(UnaryExpr(...)),
+  End(UnaryExpr(...)),
+  Block(AssignmentStmt(...))))
+
+# Вложенный цикл для
+Для а = 1 По 10 Цикл
+  Для б = 1 По 10 Цикл
+    результат = результат + а * б;
+  КонецЦикла;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(Number),
+  End(Number),
+  Block(ForStmt(
+    VariableName,
+    Start(Number),
+    End(Number),
+    Block(...)))))
+
+# Цикл для с условным оператором
+Для а = 1 По 10 Цикл
+  Если а > 5 Тогда
+    результат = результат + а;
+  КонецЕсли;
+КонецЦикла;
+==>
+Module(ForStmt(
+  VariableName,
+  Start(Number),
+  End(Number),
+  Block(IfStmt(
+    Condition(...),
+    Block(AssignmentStmt(...))))))

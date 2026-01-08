@@ -1,79 +1,382 @@
-# Пустой модуль
-
+# Литерал - целое число
+Возврат 42;
 ==>
-Module
+Module(ReturnStmt(
+    Expression(Number)))
 
-# Процедура (минимальная)
-Процедура Тест()
-КонецПроцедуры
+# Литерал - дробное число
+Возврат 3.14;
 ==>
-Module(MethodDef(ProcedureDef(Identifier, ParamList, Block)))
+Module(ReturnStmt(
+    Expression(Number)))
 
-# Функция (возврат числа)
-Функция Сумма()
-  Возврат 1;
-КонецФункции
+# Литерал - строка
+Возврат "Привет";
 ==>
-Module(MethodDef(FunctionDef(Identifier, ParamList, Block(Statement(ReturnStmt(Expression(...)))))))
+Module(ReturnStmt(
+    Expression(String)))
 
-# Число как выражение-оператор
-1;
+# Литерал - многострочная строка
+Возврат "строка1
+|строка2
+|строка3";
 ==>
-Module(Statement(SimpleStmt(Expression(OrExpr(AndExpr(CompareExpr(AddExpr(MulExpr(UnaryExpr(PostfixExpr(Primary(Literal(Number)))))))))))))
+Module(ReturnStmt(
+    Expression(MultilineString)))
 
-# Строка
-"Привет";
+# Литерал - дата
+Возврат '20240101';
 ==>
-Module(Statement(SimpleStmt(Expression(OrExpr(AndExpr(CompareExpr(AddExpr(MulExpr(UnaryExpr(PostfixExpr(Primary(Literal(String)))))))))))))
+Module(ReturnStmt(
+    Expression(Date)))
 
-# Булевы литералы
-Истина;
-Ложь;
+# Литерал - дата с временем
+Возврат '20240101120000';
 ==>
-Module(
-  Statement(SimpleStmt(Expression(...))),
-  Statement(SimpleStmt(Expression(...))))
+Module(ReturnStmt(
+    Expression(Date)))
 
-# Неопределено
-Неопределено;
+# Литерал - Истина
+Возврат Истина;
 ==>
-Module(Statement(SimpleStmt(Expression(...))))
+Module(ReturnStmt(
+    Expression(True)))
 
-# Префиксные унарные операторы
--1;
-НЕ Ложь;
+# Литерал - Ложь
+Возврат Ложь;
 ==>
-Module(
-  Statement(SimpleStmt(Expression(...))),
-  Statement(SimpleStmt(Expression(...))))
+Module(ReturnStmt(
+    Expression(False)))
 
-# Приоритет операторов (+ и *)
-1 + 2 * 3;
+# Литерал - Неопределено
+Возврат Неопределено;
 ==>
-Module(Statement(SimpleStmt(Expression(OrExpr(AndExpr(CompareExpr(AddExpr(
-  MulExpr(...),
-  MulExpr(UnaryExpr(...), UnaryExpr(...))
-))))))))
+Module(ReturnStmt(
+    Expression(Undefined)))
 
-# Вызов функции и цепочка MemberAccess
-Объект.Метод(1, 2).Свойство;
+# Литерал - Null
+Возврат Null;
 ==>
-Module(Statement(SimpleStmt(Expression(...))))
+Module(ReturnStmt(
+    Expression(Null)))
 
-# Индексация
-Массив[0];
+# Выражение - переменная
+Возврат переменная;
 ==>
-Module(Statement(SimpleStmt(Expression(...))))
+Module(ReturnStmt(
+    Expression(VariableName)))
 
-# Новый
-Новый Структура;
+# Бинарное выражение - сложение
+Возврат 1 + 2;
 ==>
-Module(Statement(SimpleStmt(Expression(...))))
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(Number,ArithOp,Number))))
 
-# IfStmt с бинарным сравнением
-Если а > 0 Тогда
-  б = 1;
-КонецЕсли;
+# Бинарное выражение - вычитание
+Возврат 5 - 3;
 ==>
-Module(Statement(IfStmt(Expression(...), Block(Statement(SimpleStmt(Assignment(...)))))))
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(Number,ArithOp,Number))))
 
+# Бинарное выражение - умножение
+Возврат 2 * 3;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(Number,ArithOp,Number))))
+
+# Бинарное выражение - деление
+Возврат 10 / 2;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(Number,ArithOp,Number))))
+
+# Бинарное выражение - остаток от деления
+Возврат 10 % 3;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(Number,ArithOp,Number))))
+
+# Бинарное выражение - сравнение больше
+Возврат а > 0;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(VariableName,CompareOp,Number))))
+
+# Бинарное выражение - сравнение меньше
+Возврат а < 10;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(VariableName,CompareOp,Number))))
+
+# Бинарное выражение - сравнение больше или равно
+Возврат а >= 0;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(VariableName,CompareOp,Number))))
+
+# Бинарное выражение - сравнение меньше или равно
+Возврат а <= 10;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(VariableName,CompareOp,Number))))
+
+# Бинарное выражение - равно
+Возврат а = 5;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(VariableName,CompareOp,Number))))
+
+# Бинарное выражение - не равно
+Возврат а <> 5;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(VariableName,CompareOp,Number))))
+
+# Бинарное выражение - логическое И
+Возврат Истина И Ложь;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(True,LogicOp(AND),False))))
+
+# Бинарное выражение - логическое ИЛИ
+Возврат Истина ИЛИ Ложь;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(True,LogicOp(OR),False))))
+
+# Бинарное выражение - приоритет операций
+Возврат 1 + 2 * 3;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(
+            Number,
+            ArithOp,
+            BinaryExpr(Number,ArithOp,Number)))))
+
+# Бинарное выражение - конкатенация строк
+Возврат "Привет" + " " + "Мир";
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(
+            BinaryExpr(String,ArithOp,String),
+            ArithOp,
+            String))))
+
+# Унарное выражение - отрицание числа
+Возврат -5;
+==>
+Module(ReturnStmt(
+    Expression(UnaryExpr(ArithOp,Number))))
+
+# Унарное выражение - логическое НЕ
+Возврат НЕ Ложь;
+==>
+Module(ReturnStmt(
+    Expression(UnaryExpr(NOT,False))))
+
+# Выражение в скобках
+Возврат (1 + 2);
+==>
+Module(ReturnStmt(
+    Expression(
+        ParenthesizedExpr(
+            BinaryExpr(Number,ArithOp,Number)))))
+
+# Выражение в скобках с приоритетом
+Возврат (1 + 2) * 3;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(
+            ParenthesizedExpr(
+                BinaryExpr(Number,
+                    ArithOp,
+                    Number)),
+            ArithOp,
+            Number))))
+
+# Вызов функции без параметров
+Возврат Сумма();
+==>
+Module(ReturnStmt(
+    Expression(CallExpr(VariableName,
+        ArgList()))))
+
+# Вызов функции с одним параметром
+Возврат Сумма(1);
+==>
+Module(ReturnStmt(
+    Expression(CallExpr(VariableName,
+        ArgList(Number)))))
+
+# Вызов функции с несколькими параметрами
+Возврат Сумма(1, 2, 3);
+==>
+Module(ReturnStmt(
+    Expression(CallExpr(VariableName,
+        ArgList(Number,Number,Number)))))
+
+# Вызов функции с выражениями в параметрах
+Возврат Сумма(1 + 2, а * 3);
+==>
+Module(ReturnStmt(
+    Expression(CallExpr(VariableName,
+        ArgList(
+            BinaryExpr(Number,ArithOp,Number),
+            BinaryExpr(VariableName,ArithOp,Number))))))
+
+# Доступ к свойству объекта
+Возврат Объект.Свойство;
+==>
+Module(ReturnStmt(
+    Expression(MemberExpr(VariableName,PropertyName))))
+
+# Доступ к элементу массива
+Возврат Массив[0];
+==>
+Module(ReturnStmt(
+    Expression(MemberExpr(VariableName,Index(Number)))))
+
+# Доступ к элементу массива по переменной
+Возврат Массив[индекс];
+==>
+Module(ReturnStmt(
+    Expression(MemberExpr(VariableName,Index(VariableName)))))
+
+# Доступ к элементу массива по выражению
+Возврат Массив[индекс + 1];
+==>
+Module(ReturnStmt(
+    Expression(MemberExpr(VariableName,Index(
+        BinaryExpr(VariableName,ArithOp,Number))))))
+
+# Цепочка доступа к свойствам
+Возврат Объект.Свойство.ПодСвойство;
+==>
+Module(ReturnStmt(
+    Expression(MemberExpr(MemberExpr(VariableName,PropertyName),PropertyName))))
+
+# Вызов метода объекта
+Возврат Объект.Метод();
+==>
+Module(ReturnStmt(
+    Expression(CallExpr(MemberExpr(VariableName,PropertyName),ArgList()))))
+
+# Вызов метода объекта с параметрами
+Возврат Объект.Метод(1, 2);
+==>
+Module(ReturnStmt(
+    Expression(CallExpr(MemberExpr(VariableName,PropertyName),ArgList(Number,Number)))))
+
+# Вызов метода и доступ к свойству
+Возврат Объект.Метод().Свойство;
+==>
+Module(ReturnStmt(
+    Expression(MemberExpr(CallExpr(MemberExpr(VariableName,PropertyName),ArgList()),PropertyName))))
+
+# Вызов метода элемента массива
+Возврат Массив[0].Метод();
+==>
+Module(ReturnStmt(
+    Expression(CallExpr(MemberExpr(MemberExpr(VariableName,Index(Number)),PropertyName),ArgList()))))
+
+# Создание нового объекта
+Возврат Новый Структура;
+==>
+Module(ReturnStmt(
+    Expression(
+        NewExpr(TypeName))))
+
+# Создание нового объекта с параметрами
+Возврат Новый(Тип, Параметр1, Параметр2);
+==>
+Module(ReturnStmt(
+    Expression(
+        NewExpr(VariableName,VariableName,VariableName))))
+
+# Тернарное выражение
+Возврат ?(условие, 1, 0);
+==>
+Module(ReturnStmt(
+    Expression(
+        TernaryExpr(Condition(VariableName),TrueCause(Number),FalseCause(Number)))))
+
+# Тернарное выражение с выражениями
+Возврат ?(а > 0, а + 1, а - 1);
+==>
+Module(ReturnStmt(
+    Expression(TernaryExpr(
+        Condition(BinaryExpr(VariableName,CompareOp,Number)),
+        TrueCause(BinaryExpr(VariableName,ArithOp,Number)),
+        FalseCause(BinaryExpr(VariableName,ArithOp,Number))))))
+
+# Асинхронное выражение
+Возврат Ждать АсинхМетод();
+==>
+Module(ReturnStmt(
+    Expression(
+        AwaitExpr(CallExpr(VariableName,ArgList())))))
+
+# Сложное выражение - комбинация операций
+Возврат (а + б) * (в - г);
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(
+            ParenthesizedExpr(BinaryExpr(VariableName,ArithOp,VariableName)),
+            ArithOp,
+            ParenthesizedExpr(BinaryExpr(VariableName,ArithOp,VariableName))))))
+
+# Выражение с логическими операторами
+Возврат а > 0 И б < 10;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(
+            BinaryExpr(VariableName,CompareOp,Number),
+            LogicOp(AND),
+            BinaryExpr(VariableName,CompareOp,Number)))))
+
+# Выражение с вложенными вызовами
+Возврат Функция1(Функция2(1), 2);
+==>
+Module(ReturnStmt(
+    Expression(CallExpr(VariableName,ArgList(CallExpr(VariableName,ArgList(Number)),Number)))))
+
+# Выражение - сложная цепочка доступа и вызовов
+Возврат Объект.Метод(1).Свойство[0];
+==>
+Module(ReturnStmt(
+    Expression(MemberExpr(MemberExpr(CallExpr(MemberExpr(VariableName,PropertyName),ArgList(Number)),PropertyName),Index(Number)))))
+
+# Выражение - унарный оператор с бинарным
+Возврат -а + б;
+==>
+Module(ReturnStmt(
+    Expression(
+        BinaryExpr(
+            UnaryExpr(ArithOp,VariableName),
+            ArithOp,
+            VariableName))))
+
+# Выражение - НЕ с бинарным
+Возврат НЕ (а И б);
+==>
+Module(ReturnStmt(
+    Expression(UnaryExpr(NOT,
+        ParenthesizedExpr(BinaryExpr(VariableName,LogicOp(AND),VariableName))))))
