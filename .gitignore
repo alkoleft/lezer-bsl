@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Benchmark results
+benchmarks/benchmark-results.json

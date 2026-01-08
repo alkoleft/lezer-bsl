@@ -62,9 +62,9 @@ function initApp() {
   if (!codeInput || !treeOutput) return
 
   function updateTree() {
-    const startTime = performance.now()
     const code = codeInput.value
     try {
+      const startTime = performance.now()
       const tree = parser.parse(code)
       const parseTime = performance.now() - startTime
       const html = createTreeHTML(tree, code)
