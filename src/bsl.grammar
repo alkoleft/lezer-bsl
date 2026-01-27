@@ -1,47 +1,34 @@
 @precedence {
-  typeargs,
-  typeMember,
-  typePrefix,
-  intersectionPrefixed @left,
-  intersection @left,
-  unionPrefixed @left,
-  union @left,
-  typeExtends @right,
   else @right,
   member,
-  readonly,
-  newArgs,
+  newExpr,
   call,
-  instantiate,
-  taggedTemplate,
   prefix,
   postfix,
-  typeof,
   exp @left,
   times @left,
   plus @left,
-  shift @left,
   loop,
   rel @left,
-  satisfies,
   equal @left,
-  bitAnd @left,
-  bitXor @left,
-  bitOr @left,
   and @left,
   or @left,
   ternary @right,
   assign @right,
   comma @left,
-  statement @cut,
-  predicate
+  statement @cut
 }
 
 // Корневой элемент модуля - последовательность элементов (процедур, функций, операторов)
-@top Module { element* }
+// Последний оператор может быть без `;`.
+@top Module { 
+  (VarDecl ";")* 
+  (ProcedureDef | FunctionDef)*
+  ModuleBlock?
+  }
 
 // Пропускаемые символы при парсинге (пробелы и однострочные комментарии)
-@skip { space | LineComment }
+@skip { space | LineComment | Preproc }
 
 // Определение токенов (лексических единиц)
 @tokens {
@@ -59,10 +46,6 @@
   // Строка препроцессора (директива компиляции, начинается с #)
   // Сохраняется как токен для возможности анализа потребителями
   Preproc { "#" ![\n]* }
-
-  // Строка аннотации (директивы компилятора / метаданные обработчиков и т.д.)
-  // Сохраняется как токен для избежания LR конфликтов при парсинге
-  Annotation { "&" ![\n]* }
 
   // Числовой литерал (целое число или число с плавающей точкой)
   Number {
@@ -87,7 +70,9 @@
   stringContent { !["\\\n]+ }
 
   // Литерал даты: 'YYYYMMDD' или 'YYYYMMDDhhmmss' в одинарных кавычках
-  Date { "'" @digit@digit@digit@digit@digit@digit@digit@digit (@digit@digit@digit@digit@digit@digit)? "'" }
+  // Поддерживает разделители: '2017.03.23 10:45:25', '2017\03\23-10~45~25'
+  Date { "'" dateContent "'" }
+  dateContent { (@digit+ (!['0-9] @digit+)*)+ }
 
   // Идентификатор: начинается с буквы или подчеркивания, может содержать буквы, цифры, кириллицу
   identifier { IdentStart IdentContinue* }
@@ -102,65 +87,73 @@
   @precedence { space, identifier }
 }
 
-// Элемент модуля: может быть строка препроцессора, аннотация, определение метода или оператор
-element {
-  PreprocLine |
-  ProcedureDef |
-  FunctionDef |
-  statement
-}
-
-// Строка препроцессора
-PreprocLine { Preproc }
-
-// Вспомогательное правило: разделенный запятыми список элементов (может быть пустым)
-commaSep<content> {
-  "" | content ("," content?)*
-}
-
-// Вспомогательное правило: разделенный запятыми список элементов (минимум один элемент)
-commaSep1<content> {
-  content ("," content)*
+ModuleBlock {
+  ";"* blockItem
+  (";" blockItem?)*
 }
 
 // Объявление переменных модуля: ключевое слово Перем, список спецификаций переменных, точка с запятой
 VarDecl {
   Annotation?
   kw<"Var", "Перем">
-  commaSep1<VariableName>
+  commaSep1<VarSpec>
+}
+
+// Спецификация переменной: имя переменной с опциональным модификатором Экспорт
+VarSpec {
+  VariableName
   namedKw<"Export", "Экспорт">?
+}
+
+// Аннотация компиляции: директивы для процедур и функций
+Annotation {
+  "&" AnnotationType ("(" String ")")?
+}
+
+AnnotationType {
+  kw<"AtClient", "НаКлиенте"> |
+  kw<"AtServer", "НаСервере"> |
+  kw<"AtServerNoContext", "НаСервереБезКонтекста"> |
+  kw<"AtClientAtServerNoContext", "НаКлиентеНаСервереБезКонтекста"> |
+  kw<"AtClientAtServer", "НаКлиентеНаСервере"> |
+  kw<"Before", "Перед"> |
+  kw<"After", "После"> |
+  kw<"Around", "Вместо"> |
+  kw<"ChangeAndValidate", "ИзменениеИКонтроль">
 }
 
 // Определение процедуры: опционально асинхронная, ключевое слово Процедура, имя, список параметров,
 // опциональный модификатор Экспорт, блок кода, ключевое слово КонецПроцедуры
 ProcedureDef {
-  Annotation?
+  Annotation*
   namedKw<"Async", "Асинх">?
   kw<"Procedure", "Процедура">
   Name { identifier }
   ParamList
   namedKw<"Export", "Экспорт">?
-  Block
+  (VarDecl ";")*
+  Block?
   kw<"EndProcedure", "КонецПроцедуры">
 }
 
 // Определение функции: опционально асинхронная, ключевое слово Функция, имя, список параметров,
 // опциональный модификатор Экспорт, блок кода, ключевое слово КонецФункции
 FunctionDef {
-  Annotation?
+  Annotation*
   namedKw<"Async", "Асинх">?
   kw<"Function", "Функция">
   Name { identifier }
   ParamList
   namedKw<"Export", "Экспорт">?
-  Block
+  (VarDecl ";")*
+  Block?
   kw<"EndFunction", "КонецФункции">
 }
 
 // Список параметров: в круглых скобках, разделенные запятыми
 ParamList { "(" commaSep<Param> ")" }
 
-// Параметр: опционально ключевое слово Знач (передача по значению), затем имя
+// Параметр: опционально ключевое слово Знач (передача по значению), затем имя и значение по умолчанию
 Param {
   namedKw<"Val", "Знач">?
   Name { identifier }
@@ -168,39 +161,51 @@ Param {
 }
 
 // Блок кода: последовательность операторов, строк препроцессора и аннотаций
+// Блок кода: объявления переменных в начале, затем операторы
 Block {
-  (statement | PreprocLine)*
+  ";"* blockItem
+  (";" blockItem?)*
 }
 
-// Оператор (statement): различные типы операторов языка
+// Элемент блока: метка и/или оператор
+blockItem {
+  LabelStmt statement? |
+  statement
+}
+
+// Оператор (без `;`): различные типы операторов языка (кроме метки)
 // Помечен как группа для удобства работы с AST
 statement[@isGroup=Statement] {
-  IfStmt ";" |                   // Условный оператор
-  WhileStmt ";" |                // Цикл пока
-  ForStmt ";" |                  // Цикл для
-  ForEachStmt ";" |              // Цикл для каждого
-  TryStmt ";" |                  // Блок обработки исключений
-  ExecuteStmt ";" |              // Оператор Выполнить
-  AwaitStmt { AwaitExpr } ";" |  // Оператор Ждать
-  ContinueStmt ";" |             // Оператор Продолжить
-  BreakStmt ";" |                // Оператор Прервать
-  GotoStmt ";" |                 // Оператор Перейти
-  LabelStmt ";" |                // Метка (для оператора Перейти)
-  AddHandlerStmt ";" |           // Оператор ДобавитьОбработчик
-  RemoveHandlerStmt ";" |        // Оператор УдалитьОбработчик
-  ReturnStmt ";" |               // Оператор Возврат
-  RaiseStmt ";" |                // Оператор ВызватьИсключение
-  VarDecl ";" |                  // Объявление переменных
-  AssignmentStmt ";" |           // Присваивание
-  CallStmt ";" |                 // Вызов метода
-  ";"                            // Пустой оператор
+  IfStmt |                   // Условный оператор
+  WhileStmt |                // Цикл пока
+  ForStmt |                  // Цикл для
+  ForEachStmt |              // Цикл для каждого
+  TryStmt |                  // Блок обработки исключений
+  AwaitStmt { AwaitExpr } |  // Оператор Ждать
+  ContinueStmt |             // Оператор Продолжить
+  BreakStmt |                // Оператор Прервать
+  GotoStmt |                 // Оператор Перейти
+  AddHandlerStmt |           // Оператор ДобавитьОбработчик
+  RemoveHandlerStmt |        // Оператор УдалитьОбработчик
+  ReturnStmt |               // Оператор Возврат
+  RaiseStmt |                // Оператор ВызватьИсключение
+  AssignmentStmt |           // Присваивание
+  CallStmt |                 // Вызов метода (проверяется перед ExecuteStmt, чтобы избежать конфликта с Объект.Выполнить())
+  ExecuteStmt                // Оператор Выполнить
 }
 
 // Оператор вызова метода: переменная или свойство объекта с аргументами
+// Поддерживает цепочки вызовов: Объект.Метод1().Метод2()
 CallStmt {
   !assign
   VariableName
+  // Базовая цепочка доступа (свойства/индексы)
   (memberAccess | indexAccess)*
+  // Вызовы методов в цепочке:
+  //   Объект.Метод1().Метод2()
+  // Представляем как ArgList + продолжение цепочки доступа, повторяемое несколько раз.
+  (ArgList (memberAccess | indexAccess)*)*
+  // Финальный вызов метода
   ArgList
 }
 
@@ -209,16 +214,16 @@ IfStmt {
   kw<"If", "Если">
   Condition { expression }
   kw<"Then", "Тогда">
-  Block
+  Block?
   ElseIfClause {
     kw<"ElseIf", "ИначеЕсли">
     Condition { expression }
     kw<"Then", "Тогда">
-    Block
+    Block?
   }*
   ElseClause {
     kw<"Else", "Иначе">
-    Block
+    Block?
   }?
   kw<"EndIf", "КонецЕсли">
 }
@@ -228,7 +233,7 @@ WhileStmt {
   kw<"While", "Пока">
   Condition { expression }
   kw<"Do", "Цикл">
-  Block
+  Block?
   kw<"EndDo", "КонецЦикла">
 }
 
@@ -242,7 +247,7 @@ ForEachStmt {
   kw<"In", "Из">
   Collection { expression }
   kw<"Do", "Цикл">
-  Block
+  Block?
   kw<"EndDo", "КонецЦикла">
 }
 ForStmt {
@@ -253,16 +258,16 @@ ForStmt {
   kw<"To", "По">
   End { expression }
   kw<"Do", "Цикл">
-  Block
+  Block?
   kw<"EndDo", "КонецЦикла">
 }
 
 // Блок обработки исключений: Попытка ... Исключение ... КонецПопытки
 TryStmt {
   kw<"Try", "Попытка">
-  Block
+  Block?
   kw<"Except", "Исключение">
-  Block
+  Block?
   kw<"EndTry", "КонецПопытки">
 }
 
@@ -272,21 +277,26 @@ ReturnStmt {
   Expression { expression }?
 }
 
-// Оператор вызова исключения: ВызватьИсключение [значение]
+// Оператор вызова исключения: ВызватьИсключение [значение] или ВызватьИсключение(параметры)
+// Форма со скобками требует минимум 2 параметра для различения от ParenthesizedExpr
 RaiseStmt {
-  kw<"Raise", "ВызватьИсключение">
-  Expression { expression }?
+  kw<"Raise", "ВызватьИсключение"> (
+    "(" expression "," commaSep<expression> ")" |
+    Expression { expression }
+  )?
 }
 
 // Оператор выполнения выражения: Выполнить выражение
+// Не распознается после точки (чтобы не конфликтовать с CallStmt: Объект.Выполнить())
 ExecuteStmt {
+  !member
   kw<"Execute", "Выполнить">
   Expression { expression }
 }
 
 // Оператор продолжения цикла: Продолжить (переход к следующей итерации)
 ContinueStmt {
-  kw<"Continue", "Continue">
+  kw<"Continue", "Продолжить">
 }
 
 // Оператор прерывания цикла: Прервать (выход из цикла)
@@ -330,7 +340,12 @@ RemoveHandlerStmt {
 AssignmentStmt {
   !assign
   VariableName
+  // Базовая цепочка доступа (свойства/индексы)
   (memberAccess | indexAccess)*
+  // Вызовы методов в левой части присваивания:
+  //   Объект.Метод1().Метод2().Свойство = ...
+  // Представляем как ArgList + продолжение цепочки доступа, повторяемое несколько раз.
+  (ArgList (memberAccess | indexAccess)*)*
   "="
   Expression { expression }
 }
@@ -390,20 +405,16 @@ VariableName { identifier }
 // Доступ к свойству объекта: .свойство
 memberAccess { "." PropertyName { identifier } }
 
-// Доступ к элементу массива: [индекс]
+// Доступ к элементу массива или свойству по строке: [индекс] или ["свойство"]
 indexAccess { "[" Index { expression } "]" }
 
 // Список аргументов: разделенные запятыми выражения в скобках
 ArgList { "(" commaSep<expression> ")" }
 
-// Создание нового объекта: Новый ТипОбъекта или Новый(конструктор, параметры)
+// Создание нового объекта: Новый Тип, Новый Тип(параметры) или Новый(конструктор, параметры)
 NewExpr {
-  kw<"New", "Новый">
-  TypeName { identifier } |
-  kw<"New", "Новый">
-  "("
-  commaSep1<expression>
-  ")"
+  kw<"New", "Новый"> !newExpr TypeName { identifier } ArgList? |
+  kw<"New", "Новый"> "(" commaSep1<expression> ")"
 }
 
 // Тернарное выражение: ?(условие, значение_если_истина, значение_если_ложь)
@@ -451,6 +462,16 @@ LogicOp<expr> { expr }
 
 // Оператор сравнения: базовое правило для операций сравнения
 CompareOp<expr> { expr }
+
+// Вспомогательное правило: разделенный запятыми список элементов (может быть пустым)
+commaSep<content> {
+  "" | content ("," content?)*
+}
+
+// Вспомогательное правило: разделенный запятыми список элементов (минимум один элемент)
+commaSep1<content> {
+  content ("," content)*
+}
 
 @detectDelim
 

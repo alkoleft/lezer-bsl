@@ -1,0 +1,81 @@
+# New without parameters
+
+объект = Новый Массив
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(
+        NewExpr(TypeName)
+      )
+    )
+  )
+)
+
+# New with parameters after type
+
+объект = Новый Массив(10)
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(
+        CallExpr(
+          NewExpr(TypeName),
+          ArgList(Number)
+        )
+      )
+    )
+  )
+)
+
+# New with multiple parameters
+
+объект = Новый Структура("Ключ", Значение, "Ключ2", 123)
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(
+        CallExpr(
+          NewExpr(TypeName),
+          ArgList(
+            String,
+            VariableName,
+            String,
+            Number
+          )
+        )
+      )
+    )
+  )
+)
+
+# New with dynamic type
+
+объект = Новый(Тип, Параметры)
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(
+        NewExpr(
+          VariableName,
+          VariableName
+        )
+      )
+    )
+  )
+)

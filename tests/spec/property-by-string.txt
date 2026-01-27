@@ -1,0 +1,42 @@
+# Property access by string
+
+значение = Объект["Свойство"]
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(
+        MemberExpr(
+          VariableName,
+          Index(String)
+        )
+      )
+    )
+  )
+)
+
+# Method call by string
+
+результат = Объект["Метод"](параметр)
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(
+        CallExpr(
+          MemberExpr(
+            VariableName,
+            Index(String)
+          ),
+          ArgList(VariableName)
+        )
+      )
+    )
+  )
+)

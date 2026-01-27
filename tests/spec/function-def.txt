@@ -1,0 +1,470 @@
+# Простая функция без параметров
+Функция Тест()
+КонецФункции
+==>
+Module(
+  FunctionDef(Name,ParamList))
+
+# Функция на английском
+Function Test()
+EndFunction
+==>
+Module(
+  FunctionDef(Name,ParamList))
+
+# Функция на английском с параметрами
+Function Add(A, B)
+  Return A + B;
+EndFunction
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Функция на английском с Экспорт
+Function PublicFunction() Export
+  Return 1;
+EndFunction
+==>
+Module(FunctionDef(Name,ParamList,Export,Block(
+  ReturnStmt(...))))
+
+# Функция на английском с Async
+Async Function Test()
+  Return 1;
+EndFunction
+==>
+Module(FunctionDef(Async,Name,ParamList,Block(
+  ReturnStmt(...))))
+
+# Функция без параметров с блоком кода
+Функция Сумма()
+  результат = 1 + 2;
+  Возврат результат;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Block(
+  AssignmentStmt(...),
+  ReturnStmt(...))))
+
+# Функция с одним параметром
+Функция Удвоить(Значение)
+  Возврат Значение * 2;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Функция с несколькими параметрами
+Функция Сложить(А, Б)
+  Возврат А + Б;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Функция с параметром по значению (Знач)
+Функция Тест(Знач Параметр)
+  Возврат Параметр;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Val,Name)),Block(
+  ReturnStmt(...))))
+
+# Функция с параметрами по значению и без
+Функция Тест(Параметр1, Знач Параметр2)
+  Возврат Параметр1 + Параметр2;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Val,Name)),Block(
+  ReturnStmt(...))))
+
+# Функция с параметром по умолчанию
+Функция Тест(Параметр = 0)
+  Возврат Параметр;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name,DefaultValue(Number))),Block(
+  ReturnStmt(...))))
+
+# Функция с параметром по умолчанию (строка)
+Функция Тест(Имя = "По умолчанию")
+  Возврат Имя;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name,DefaultValue(String))),Block(
+  ReturnStmt(...))))
+
+# Функция с параметром по умолчанию (Истина)
+Функция Тест(Флаг = Истина)
+  Возврат Флаг;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name,DefaultValue(True))),Block(
+  ReturnStmt(...))))
+
+# Функция с параметром по умолчанию и Знач
+Функция Тест(Знач Параметр = 10)
+  Возврат Параметр;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Val,Name,DefaultValue(Number))),Block(
+  ReturnStmt(...))))
+
+# Функция с Экспорт
+Функция ПубличнаяФункция() Экспорт
+  Возврат 1;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Export,Block(
+  ReturnStmt(...))))
+
+# Функция с Экспорт и параметрами
+Функция ПубличнаяФункция(Параметр) Экспорт
+  Возврат Параметр;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Export,Block(
+  ReturnStmt(...))))
+
+# Асинхронная функция
+Асинх Функция Тест()
+  Возврат 1;
+КонецФункции
+==>
+Module(FunctionDef(Async,Name,ParamList,Block(
+  ReturnStmt(...))))
+
+# Асинхронная функция с параметрами
+Асинх Функция Тест(Параметр)
+  Возврат Параметр;
+КонецФункции
+==>
+Module(FunctionDef(Async,Name,ParamList(Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Асинхронная функция с Экспорт
+Асинх Функция Тест() Экспорт
+  Возврат 1;
+КонецФункции
+==>
+Module(FunctionDef(Async,Name,ParamList,Export,Block(
+  ReturnStmt(...))))
+
+# Функция с аннотацией
+&НаКлиенте
+Функция Тест()
+  Возврат 1;
+КонецФункции
+==>
+Module(FunctionDef(Annotation(AnnotationType),Name,ParamList,Block(
+  ReturnStmt(...))))
+
+# Функция с аннотацией и Экспорт
+&НаСервере
+Функция Тест() Экспорт
+  Возврат 1;
+КонецФункции
+==>
+Module(FunctionDef(Annotation(AnnotationType),Name,ParamList,Export,Block(
+  ReturnStmt(...))))
+
+# Функция с аннотацией и Асинх
+&НаКлиенте
+Асинх Функция Тест()
+  Возврат 1;
+КонецФункции
+==>
+Module(FunctionDef(Annotation(AnnotationType),Async,Name,ParamList,Block(
+  ReturnStmt(...))))
+
+# Функция с условным оператором
+Функция Максимум(А, Б)
+  Если А > Б Тогда
+    Возврат А;
+  Иначе
+    Возврат Б;
+  КонецЕсли;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Name)),Block(
+  IfStmt(
+    Condition(...),
+    Block(ReturnStmt(...)),
+    ElseClause(Block(ReturnStmt(...)))))))
+
+# Функция с циклом
+Функция СуммаМассива(Массив)
+  результат = 0;
+  Для Каждого элемент Из Массив Цикл
+    результат = результат + элемент;
+  КонецЦикла;
+  Возврат результат;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  AssignmentStmt(VariableName,Expression(Number)),
+  ForEachStmt(VariableName,Collection(...),Block(
+    AssignmentStmt(...))),
+  ReturnStmt(...))))
+
+# Функция с обработкой исключений
+Функция БезопасноеДеление(Делимое, Делитель)
+  Попытка
+    Возврат Делимое / Делитель;
+  Исключение
+    Возврат 0;
+  КонецПопытки;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Name)),Block(
+  TryStmt(
+    Block(ReturnStmt(...)),
+    Block(ReturnStmt(...))))))
+
+# Функция с вызовом другой функции
+Функция УмножитьНаДва(Значение)
+  Возврат Удвоить(Значение);
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Функция с несколькими операторами
+Функция Обработать(ВходноеЗначение)
+  промежуточное = ВходноеЗначение * 2;
+  результат = промежуточное + 10;
+  Возврат результат;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  AssignmentStmt(...),
+  AssignmentStmt(...),
+  ReturnStmt(...))))
+
+# Функция с пустым блоком и несколькими пустыми строками
+Функция ПустаяФункция()
+  
+КонецФункции
+==>
+Module(
+  FunctionDef(Name,ParamList))
+
+# Функция с одним параметром и пустым телом
+Функция Тест(Параметр)
+КонецФункции
+==>
+Module(
+  FunctionDef(Name,ParamList(Param(Name))))
+
+# Функция с тремя параметрами
+Функция Вычислить(А, Б, В)
+  Возврат А + Б + В;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Name),Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Функция с параметрами разных типов (Знач и обычные)
+Функция Тест(Обычный, Знач ПоЗначению, СЗначением = 5)
+  Возврат Обычный + ПоЗначению + СЗначением;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Val,Name),Param(Name,DefaultValue(Number))),Block(
+  ReturnStmt(...))))
+
+# Функция с вызовом метода объекта
+Функция ПолучитьЗначение(Объект)
+  Возврат Объект.Метод();
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Функция с доступом к свойству
+Функция ПолучитьСвойство(Объект)
+  Возврат Объект.Свойство;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Функция с элементом массива
+Функция ПолучитьЭлемент(Массив, Индекс)
+  Возврат Массив[Индекс];
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Функция с созданием объекта
+Функция СоздатьОбъект()
+  Возврат Новый Структура;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Block(
+  ReturnStmt(...))))
+
+# Функция с тернарным выражением
+Функция Максимум(А, Б)
+  Возврат ?(А > Б, А, Б);
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Name)),Block(
+  ReturnStmt(...))))
+
+# Функция без оператора Возврат
+Функция Тест()
+  а = 1;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Block(
+  AssignmentStmt(...))))
+
+# Несколько функций в модуле
+Функция Функция1()
+  Возврат 1;
+КонецФункции
+Функция Функция2()
+  Возврат 2;
+КонецФункции
+==>
+Module(
+  FunctionDef(Name,ParamList,Block(
+    ReturnStmt(...))),
+  FunctionDef(Name,ParamList,Block(
+    ReturnStmt(...))))
+
+# Функция с параметром по умолчанию (Неопределено)
+Функция Тест(Параметр = Неопределено)
+  Возврат Параметр;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name,DefaultValue(Undefined))),Block(
+  ReturnStmt(...))))
+
+# Функция с параметром по умолчанию (Null)
+Функция Тест(Параметр = Null)
+  Возврат Параметр;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name,DefaultValue(Null))),Block(
+  ReturnStmt(...))))
+
+# Функция с параметром по умолчанию (дата)
+Функция Тест(Дата = '20240101')
+  Возврат Дата;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name,DefaultValue(Date))),Block(
+  ReturnStmt(...))))
+
+# Функция с логическим выражением в условии
+Функция Проверить(А, Б)
+  Если А > 0 И Б < 10 Тогда
+    Возврат Истина;
+  Иначе
+    Возврат Ложь;
+  КонецЕсли;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Name)),Block(
+  IfStmt(
+    Condition(...),
+    Block(ReturnStmt(Expression(True))),
+  ElseClause(Block(
+    ReturnStmt(Expression(False))))))))
+
+# Функция с вложенными условиями
+Функция Классифицировать(Значение)
+  Если Значение > 0 Тогда
+    Если Значение > 100 Тогда
+      Возврат "Большое";
+    Иначе
+      Возврат "Малое";
+    КонецЕсли;
+  Иначе
+    Возврат "Отрицательное";
+  КонецЕсли;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  IfStmt(
+    Condition(...),
+    Block(IfStmt(
+      Condition(...),
+      Block(ReturnStmt(...)),
+    ElseClause(Block(
+      ReturnStmt(...))))),
+  ElseClause(Block(
+    ReturnStmt(...)))))))
+
+# Функция с циклом Пока
+Функция Факториал(Число)
+  результат = 1;
+  Пока Число > 0 Цикл
+    результат = результат * Число;
+    Число = Число - 1;
+  КонецЦикла;
+  Возврат результат;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  AssignmentStmt(VariableName,Expression(Number)),
+  WhileStmt(Condition(...),Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...))),
+  ReturnStmt(...))))
+
+# Функция с циклом Для
+Функция СуммаДоН(Н)
+  результат = 0;
+  Для счетчик = 1 По Н Цикл
+    результат = результат + счетчик;
+  КонецЦикла;
+  Возврат результат;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  AssignmentStmt(VariableName,Expression(Number)),
+  ForStmt(VariableName,Start(Number),End(VariableName),Block(
+    AssignmentStmt(...))),
+  ReturnStmt(...))))
+
+# Функция с оператором Продолжить
+Функция СуммаЧетных(Массив)
+  результат = 0;
+  Для Каждого элемент Из Массив Цикл
+    Если элемент % 2 <> 0 Тогда
+      Продолжить;
+    КонецЕсли;
+    результат = результат + элемент;
+  КонецЦикла;
+  Возврат результат;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name)),Block(
+  AssignmentStmt(...),
+  ForEachStmt(VariableName,Collection(VariableName),
+    Block(
+        IfStmt(Condition(...),
+            Block(ContinueStmt)),
+        AssignmentStmt(...))),
+  ReturnStmt(...))))
+
+# Функция с оператором Прервать
+Функция НайтиПервое(Массив, Значение)
+  Для Каждого элемент Из Массив Цикл
+    Если элемент = Значение Тогда
+      Возврат элемент;
+      Прервать;
+    КонецЕсли;
+  КонецЦикла;
+  Возврат Неопределено;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList(Param(Name),Param(Name)),Block(
+  ForEachStmt(VariableName,Collection(VariableName),Block(
+    IfStmt(Condition(...),Block(
+      ReturnStmt(...),
+      BreakStmt)))),
+  ReturnStmt(...))))

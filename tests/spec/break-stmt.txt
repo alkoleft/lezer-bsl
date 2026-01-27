@@ -1,37 +1,37 @@
 # Простой оператор Прервать
 Прервать;
 ==>
-Module(BreakStmt)
+Module(ModuleBlock(BreakStmt))
 
 # Оператор Прервать в цикле пока
 Пока Истина Цикл
   Прервать;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(True),
-  Block(BreakStmt)))
+  Block(BreakStmt))))
 
 # Оператор Прервать в цикле для
 Для а = 1 По 10 Цикл
   Прервать;
 КонецЦикла;
 ==>
-Module(ForStmt(
+Module(ModuleBlock(ForStmt(
   VariableName,
   Start(...),
   End(...),
-  Block(BreakStmt)))
+  Block(BreakStmt))))
 
 # Оператор Прервать в цикле для каждого
 Для Каждого элемент Из коллекция Цикл
   Прервать;
 КонецЦикла;
 ==>
-Module(ForEachStmt(
+Module(ModuleBlock(ForEachStmt(
   VariableName,
   Collection(...),
-  Block(BreakStmt)))
+  Block(BreakStmt))))
 
 # Оператор Прервать с условием
 Пока Истина Цикл
@@ -40,16 +40,16 @@ Module(ForEachStmt(
   КонецЕсли;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
   Block(IfStmt(
     Condition(...),
-    Block(BreakStmt)))))
+    Block(BreakStmt))))))
 
 # Оператор Прервать на английском
 Break;
 ==>
-Module(BreakStmt)
+Module(ModuleBlock(BreakStmt))
 
 # Оператор Прервать во вложенном цикле
 Для а = 1 По 10 Цикл
@@ -58,7 +58,7 @@ Module(BreakStmt)
   КонецЦикла;
 КонецЦикла;
 ==>
-Module(ForStmt(
+Module(ModuleBlock(ForStmt(
   VariableName,
   Start(...),
   End(...),
@@ -66,7 +66,7 @@ Module(ForStmt(
     VariableName,
     Start(...),
     End(...),
-    Block(BreakStmt)))))
+    Block(BreakStmt))))))
 
 # Оператор Прервать с операторами до него
 Пока Истина Цикл
@@ -75,12 +75,12 @@ Module(ForStmt(
   б = 2;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(True),
   Block(
     AssignmentStmt(...),
     BreakStmt,
-    AssignmentStmt(...))))
+    AssignmentStmt(...)))))
 
 # Оператор Прервать в блоке обработки исключений
 Пока Истина Цикл
@@ -91,12 +91,12 @@ Module(WhileStmt(
   КонецПопытки;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(True),
   Block(
     TryStmt(
       Block(BreakStmt),
-      Block(...)))))
+      Block(...))))))
 
 # Оператор Прервать после выполнения действий
 Пока Истина Цикл
@@ -106,10 +106,10 @@ Module(WhileStmt(
   КонецЕсли;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(True),
   Block(
     AssignmentStmt(...),
     IfStmt(
       Condition(...),
-      Block(BreakStmt)))))
+      Block(BreakStmt))))))

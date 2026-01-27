@@ -1,73 +1,73 @@
 # Простой вызов метода без параметров
 Метод();
 ==>
-Module(CallStmt(VariableName,ArgList()))
+Module(ModuleBlock(CallStmt(VariableName,ArgList())))
 
 # Вызов метода с одним параметром
 Метод(параметр);
 ==>
-Module(CallStmt(VariableName,ArgList(VariableName)))
+Module(ModuleBlock(CallStmt(VariableName,ArgList(VariableName))))
 
 # Вызов метода с несколькими параметрами
 Метод(параметр1, параметр2, параметр3);
 ==>
-Module(CallStmt(VariableName,ArgList(VariableName,VariableName,VariableName)))
+Module(ModuleBlock(CallStmt(VariableName,ArgList(VariableName,VariableName,VariableName))))
 
 # Вызов метода с числовыми параметрами
 Метод(1, 2, 3);
 ==>
-Module(CallStmt(VariableName,ArgList(Number,Number,Number)))
+Module(ModuleBlock(CallStmt(VariableName,ArgList(Number,Number,Number))))
 
 # Вызов метода со строковыми параметрами
 Метод("строка1", "строка2");
 ==>
-Module(CallStmt(VariableName,ArgList(String,String)))
+Module(ModuleBlock(CallStmt(VariableName,ArgList(String,String))))
 
 # Вызов метода с выражениями в параметрах
 Метод(1 + 2, а * 3);
 ==>
-Module(CallStmt(VariableName,ArgList(
+Module(ModuleBlock(CallStmt(VariableName,ArgList(
   BinaryExpr(...),
-  BinaryExpr(...))))
+  BinaryExpr(...)))))
 
 # Вызов метода объекта
 Объект.Метод();
 ==>
-Module(CallStmt(
+Module(ModuleBlock(CallStmt(
   VariableName,
   PropertyName,
-  ArgList()))
+  ArgList())))
 
 # Вызов метода объекта с параметрами
 Объект.Метод(параметр1, параметр2);
 ==>
-Module(CallStmt(
+Module(ModuleBlock(CallStmt(
   VariableName,
   PropertyName,
-  ArgList(VariableName,VariableName)))
+  ArgList(VariableName,VariableName))))
 
 # Вызов метода элемента массива
 массив[0].Метод();
 ==>
-Module(CallStmt(
+Module(ModuleBlock(CallStmt(
   VariableName,
   Index(Number),
   PropertyName,
-  ArgList()))
+  ArgList())))
 
 # Вызов метода с цепочкой доступа
 Объект.Свойство.Метод();
 ==>
-Module(CallStmt(
+Module(ModuleBlock(CallStmt(
   VariableName,
   PropertyName,
   PropertyName,
-  ArgList()))
+  ArgList())))
 
 # Вызов метода на английском
 Method();
 ==>
-Module(CallStmt(VariableName,ArgList()))
+Module(ModuleBlock(CallStmt(VariableName,ArgList())))
 
 # Вызов метода без параметров внутри процедуры
 Процедура Тест()
@@ -82,74 +82,74 @@ Module(ProcedureDef(Name,ParamList,Block(
   Метод();
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(...),
   Block(
-    CallStmt(VariableName,ArgList()))))
+    CallStmt(VariableName,ArgList())))))
 
 # Вызов метода в цикле
 Пока Истина Цикл
   Метод();
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
   Block(
-    CallStmt(VariableName,ArgList()))))
+    CallStmt(VariableName,ArgList())))))
 
 # Вызов метода с вызовом функции в параметре
 Метод(Функция1(), Функция2());
 ==>
-Module(
+Module(ModuleBlock(
   CallStmt(VariableName,ArgList(
     CallExpr(VariableName,ArgList()),
-    CallExpr(VariableName,ArgList()))))
+    CallExpr(VariableName,ArgList())))))
 
 # Вызов метода с доступом к свойству в параметре
 Метод(Объект.Свойство);
 ==>
-Module(CallStmt(VariableName,ArgList(
-  MemberExpr(...))))
+Module(ModuleBlock(CallStmt(VariableName,ArgList(
+  MemberExpr(...)))))
 
 # Вызов метода с элементом массива в параметре
 Метод(массив[0]);
 ==>
-Module(CallStmt(VariableName,ArgList(
-  MemberExpr(...))))
+Module(ModuleBlock(CallStmt(VariableName,ArgList(
+  MemberExpr(...)))))
 
 # Вызов метода с созданием объекта в параметре
 Метод(Новый Структура);
 ==>
-Module(CallStmt(VariableName,ArgList(
-  NewExpr(TypeName))))
+Module(ModuleBlock(CallStmt(VariableName,ArgList(
+  NewExpr(TypeName)))))
 
 # Вызов метода с тернарным выражением в параметре
 Метод(?(условие, 1, 0));
 ==>
-Module(CallStmt(VariableName,ArgList(
+Module(ModuleBlock(CallStmt(VariableName,ArgList(
   TernaryExpr(
     Condition(...),
     TrueCause(...),
-    FalseCause(...)))))
+    FalseCause(...))))))
 
 # Несколько вызовов методов
 Метод1();
 Метод2();
 Метод3();
 ==>
-Module(
+Module(ModuleBlock(
   CallStmt(VariableName,ArgList()),
   CallStmt(VariableName,ArgList()),
-  CallStmt(VariableName,ArgList()))
+  CallStmt(VariableName,ArgList())))
 
 # Вызов метода с пустым списком параметров
 Метод();
 ==>
-Module(CallStmt(VariableName,ArgList()))
+Module(ModuleBlock(CallStmt(VariableName,ArgList())))
 
 # Вызов метода с вложенными вызовами
 Метод(Функция1(Функция2()));
 ==>
-Module(CallStmt(VariableName,ArgList(
+Module(ModuleBlock(CallStmt(VariableName,ArgList(
   CallExpr(VariableName,ArgList(
-    CallExpr(VariableName,ArgList()))))))
+    CallExpr(VariableName,ArgList())))))))

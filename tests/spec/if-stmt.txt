@@ -2,18 +2,17 @@
 Если Истина Тогда
 КонецЕсли;
 ==>
-Module(IfStmt(
-  Condition(True),
-  Block()))
+Module(ModuleBlock(IfStmt(
+  Condition(True))))
 
 # Условный оператор с блоком
 Если Истина Тогда
   а = 1;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(True),
-  Block(AssignmentStmt(...))))
+  Block(AssignmentStmt(...)))))
 
 # Условный оператор с Иначе
 Если Истина Тогда
@@ -22,11 +21,11 @@ Module(IfStmt(
   а = 2;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(True),
   Block(AssignmentStmt(...)),
   ElseClause(Block(
-    AssignmentStmt(...)))))
+    AssignmentStmt(...))))))
 
 # Условный оператор с ИначеЕсли
 Если а > 0 Тогда
@@ -35,12 +34,12 @@ Module(IfStmt(
   а = -1;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(...),
   Block(AssignmentStmt(...)),
   ElseIfClause(
     Condition(BinaryExpr(...)),
-    Block(AssignmentStmt(...)))))
+    Block(AssignmentStmt(...))))))
 
 # Условный оператор с несколькими ИначеЕсли и Иначе
 Если а > 0 Тогда
@@ -53,7 +52,7 @@ Module(IfStmt(
   результат = Неопределено;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(...),
   Block(...),
   ElseIfClause(
@@ -62,28 +61,28 @@ Module(IfStmt(
   ElseIfClause(
     Condition(...),
     Block(...)),
-  ElseClause(Block(...))))
+  ElseClause(Block(...)))))
 
 # Условный оператор с логическим выражением
 Если а > 0 И б < 10 Тогда
   результат = Истина;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(BinaryExpr(
     BinaryExpr(VariableName,CompareOp,Number),
     LogicOp(AND),
     BinaryExpr(VariableName,CompareOp,Number))),
-  Block(...)))
+  Block(...))))
 
 # Условный оператор с вызовом функции в условии
 Если Функция1() Тогда
   результат = 1;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(CallExpr(...)),
-  Block(...)))
+  Block(...))))
 
 # Условный оператор с вложенными операторами
 Если Истина Тогда
@@ -92,20 +91,20 @@ Module(IfStmt(
   в = 3;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(...),
   Block(
 AssignmentStmt(...),
 AssignmentStmt(...),
-AssignmentStmt(...))))
+AssignmentStmt(...)))))
 
 # Условный оператор с английскими ключевыми словами
 If True Then
   a = 1;
 EndIf;
 ==>
-Module(IfStmt(Condition(True),
-  Block(AssignmentStmt(...))))
+Module(ModuleBlock(IfStmt(Condition(True),
+  Block(AssignmentStmt(...)))))
 
 # Условный оператор с ElseIf и Else на английском
 If a > 0 Then
@@ -116,13 +115,13 @@ Else
   result = 0;
 EndIf;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(BinaryExpr(...)),
   Block(AssignmentStmt(...)),
   ElseIfClause(
     Condition(...),
     Block(AssignmentStmt(...))),
-  ElseClause(Block(AssignmentStmt(...)))))
+  ElseClause(Block(AssignmentStmt(...))))))
 
 # Вложенный условный оператор
 Если Истина Тогда
@@ -131,8 +130,8 @@ Module(IfStmt(
   КонецЕсли;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(...),
   Block(IfStmt(
     Condition(...),
-    Block(AssignmentStmt(...))))))
+    Block(AssignmentStmt(...)))))))

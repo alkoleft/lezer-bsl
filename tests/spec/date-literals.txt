@@ -1,0 +1,59 @@
+# Date without separators
+
+дата = '20170323'
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(Date)
+    )
+  )
+)
+
+# Date with dots and spaces
+
+дата = '2017.03.23 10:45:25'
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(Date)
+    )
+  )
+)
+
+# Date with mixed separators
+
+дата = '2017\03\23-10~45~25'
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(Date)
+    )
+  )
+)
+
+# Minimal date
+
+дата = '00010101'
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(Date)
+    )
+  )
+)

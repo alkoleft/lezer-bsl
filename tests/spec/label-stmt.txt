@@ -1,28 +1,28 @@
 # Простая метка
 ~метка:;
 ==>
-Module(LabelStmt(LabelName))
+Module(ModuleBlock(LabelStmt(LabelName)))
 
 # Метка на английском
 ~label:;
 ==>
-Module(LabelStmt(LabelName))
+Module(ModuleBlock(LabelStmt(LabelName)))
 
 # Метка с оператором после неё
 ~метка:;
 а = 1;
 ==>
-Module(
+Module(ModuleBlock(
   LabelStmt(LabelName),
-  AssignmentStmt(...))
+  AssignmentStmt(...)))
 
 # Метка с переходом к ней
 Перейти ~метка;
 ~метка:;
 ==>
-Module(
+Module(ModuleBlock(
   GotoStmt(LabelName),
-  LabelStmt(LabelName))
+  LabelStmt(LabelName)))
 
 # Метка в цикле
 ~начало:;
@@ -30,11 +30,11 @@ Module(
   Перейти ~начало;
 КонецЦикла;
 ==>
-Module(
+Module(ModuleBlock(
   LabelStmt(LabelName),
   WhileStmt(
     Condition(...),
-    Block(GotoStmt(LabelName))))
+    Block(GotoStmt(LabelName)))))
 
 # Метка в условном операторе
 Если условие Тогда
@@ -42,21 +42,21 @@ Module(
 КонецЕсли;
 ~метка:;
 ==>
-Module(
+Module(ModuleBlock(
   IfStmt(
     Condition(...),
     Block(GotoStmt(LabelName))),
-  LabelStmt(LabelName))
+  LabelStmt(LabelName)))
 
 # Несколько меток
 ~метка1:;
 ~метка2:;
 ~метка3:;
 ==>
-Module(
+Module(ModuleBlock(
   LabelStmt(LabelName),
   LabelStmt(LabelName),
-  LabelStmt(LabelName))
+  LabelStmt(LabelName)))
 
 # Метка с блоком кода после неё
 ~метка:;
@@ -64,11 +64,11 @@ Module(
 б = 2;
 в = 3;
 ==>
-Module(
+Module(ModuleBlock(
   LabelStmt(LabelName),
   AssignmentStmt(...),
   AssignmentStmt(...),
-  AssignmentStmt(...))
+  AssignmentStmt(...)))
 
 # Метка внутри процедуры
 Процедура Тест()
@@ -99,11 +99,27 @@ Module(FunctionDef(Name,ParamList,Block(
 КонецЕсли;
 ~метка:;
 ==>
-Module(
+Module(ModuleBlock(
 IfStmt(
     Condition(...),
     Block(GotoStmt(LabelName))),
 IfStmt(
     Condition(...),
     Block(GotoStmt(LabelName))),
-LabelStmt(LabelName))
+LabelStmt(LabelName)))
+
+# Переход к метке с последующим кодом
+Перейти ~метка;
+~метка:
+а = 1;
+==>
+Module(ModuleBlock(
+  GotoStmt(LabelName),
+  LabelStmt(LabelName),
+  AssignmentStmt(...)))
+
+# Простая метка без точки с запятой
+~метка:
+==>
+Module(ModuleBlock(
+  LabelStmt(LabelName)))

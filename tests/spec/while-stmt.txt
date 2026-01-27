@@ -2,26 +2,26 @@
 Пока Истина Цикл
 КонецЦикла;
 ==>
-Module(
-  WhileStmt(Condition(True),Block()))
+Module(ModuleBlock(
+  WhileStmt(Condition(True))))
 
 # Цикл пока с блоком
 Пока Истина Цикл
   а = 1;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(True),
-  Block(AssignmentStmt(...))))
+  Block(AssignmentStmt(...)))))
 
 # Цикл пока с условием
 Пока а < 10 Цикл
   а = а + 1;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(BinaryExpr(...)),
-  Block(AssignmentStmt(...))))
+  Block(AssignmentStmt(...)))))
 
 # Цикл пока с несколькими операторами
 Пока Истина Цикл
@@ -30,39 +30,39 @@ Module(WhileStmt(
   в = 3;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
   Block(
     AssignmentStmt(...),
     AssignmentStmt(...),
-    AssignmentStmt(...))))
+    AssignmentStmt(...)))))
 
 # Цикл пока с логическим выражением
 Пока а > 0 И б < 10 Цикл
   а = а - 1;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(BinaryExpr(...)),
-  Block(AssignmentStmt(...))))
+  Block(AssignmentStmt(...)))))
 
 # Цикл пока с вызовом функции в условии
 Пока Функция1() Цикл
   а = 1;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(CallExpr(...)),
-  Block(AssignmentStmt(...))))
+  Block(AssignmentStmt(...)))))
 
 # Цикл пока на английском
 While True Do
   a = 1;
 EndDo;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
-  Block(AssignmentStmt(...))))
+  Block(AssignmentStmt(...)))))
 
 # Вложенный цикл пока
 Пока Истина Цикл
@@ -71,11 +71,11 @@ Module(WhileStmt(
   КонецЦикла;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
   Block(WhileStmt(
     Condition(...),
-    Block(AssignmentStmt(...))))))
+    Block(AssignmentStmt(...)))))))
 
 # Цикл пока с условным оператором
 Пока Истина Цикл
@@ -84,17 +84,17 @@ Module(WhileStmt(
   КонецЕсли;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(True),
   Block(IfStmt(
     Condition(...),
-    Block(AssignmentStmt(...))))))
+    Block(AssignmentStmt(...)))))))
 
 # Цикл пока с переменной в условии
 Пока флаг Цикл
   флаг = Ложь;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(VariableName),
-  Block(AssignmentStmt(...))))
+  Block(AssignmentStmt(...)))))

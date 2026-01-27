@@ -1,0 +1,295 @@
+# Multiple semicolons at start
+
+;;;а = 1
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(VariableName, Expression(Number))
+  )
+)
+
+# Multiple semicolons between statements
+
+а = 1;;;б = 2
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(VariableName, Expression(Number)),
+    AssignmentStmt(VariableName, Expression(Number))
+  )
+)
+
+# Multiple semicolons at end
+
+а = 1;;;
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(VariableName, Expression(Number))
+  )
+)
+
+# No semicolon at end of module
+
+а = 1
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(VariableName, Expression(Number))
+  )
+)
+
+# Last statement without semicolon
+
+Процедура Тест()
+  а = 1;
+  б = 2
+КонецПроцедуры
+
+==>
+
+Module(
+  ProcedureDef(
+    Name,
+    ParamList,
+    Block(
+      AssignmentStmt(VariableName, Expression(Number)),
+      AssignmentStmt(VariableName, Expression(Number))
+    )
+  )
+)
+
+# Semicolons in if blocks
+
+Если Истина Тогда
+  ;;;а = 1;;;
+КонецЕсли
+
+==>
+
+Module(
+  ModuleBlock(
+    IfStmt(
+      Condition(True),
+      Block(
+        AssignmentStmt(VariableName, Expression(Number))
+      )
+    )
+  )
+)
+
+# Semicolons in loops
+
+Пока Истина Цикл
+  ;;;а = 1;;;б = 2;;;
+КонецЦикла
+
+==>
+
+Module(
+  ModuleBlock(
+    WhileStmt(
+      Condition(True),
+      Block(
+        AssignmentStmt(VariableName, Expression(Number)),
+        AssignmentStmt(VariableName, Expression(Number))
+      )
+    )
+  )
+)
+
+# Last statement without semicolon in procedure
+
+Процедура Тест()
+  а = 1;
+  б = 2;
+  Возврат
+КонецПроцедуры
+
+==>
+
+Module(
+  ProcedureDef(
+    Name,
+    ParamList,
+    Block(
+      AssignmentStmt(VariableName, Expression(Number)),
+      AssignmentStmt(VariableName, Expression(Number)),
+      ReturnStmt
+    )
+  )
+)
+
+# Mixed semicolons
+
+Функция Тест()
+  а = 1;
+  б = 2;
+  в = 3;
+  Возврат а + б + в
+КонецФункции
+
+==>
+
+Module(
+  FunctionDef(
+    Name,
+    ParamList,
+    Block(
+      AssignmentStmt(VariableName, Expression(Number)),
+      AssignmentStmt(VariableName, Expression(Number)),
+      AssignmentStmt(VariableName, Expression(Number)),
+      ReturnStmt(
+        Expression(
+          BinaryExpr(
+            BinaryExpr(VariableName, ArithOp, VariableName),
+            ArithOp,
+            VariableName
+          )
+        )
+      )
+    )
+  )
+)
+
+# Semicolons after control structures
+
+Если а > 0 Тогда
+  б = 1;
+КонецЕсли;
+в = 2;
+
+==>
+
+Module(
+  ModuleBlock(
+    IfStmt(
+      Condition(BinaryExpr(VariableName, CompareOp, Number)),
+      Block(
+        AssignmentStmt(VariableName, Expression(Number))
+      )
+    ),
+    AssignmentStmt(VariableName, Expression(Number))
+  )
+)
+
+# Multiple semicolons in try-except
+
+Попытка
+  ;;;а = 1;;;
+Исключение
+  ;;;б = 2;;;
+КонецПопытки
+
+==>
+
+Module(
+  ModuleBlock(
+    TryStmt(
+      Block(
+        AssignmentStmt(VariableName, Expression(Number))
+      ),
+      Block(
+        AssignmentStmt(VariableName, Expression(Number))
+      )
+    )
+  )
+)
+
+# Semicolons with labels
+
+~метка1: а = 1;
+~метка2: б = 2
+
+==>
+
+Module(
+  ModuleBlock(
+    LabelStmt(LabelName),
+    AssignmentStmt(VariableName, Expression(Number)),
+    LabelStmt(LabelName),
+    AssignmentStmt(VariableName, Expression(Number))
+  )
+)
+
+# Semicolons in for loops
+
+Для и = 1 По 10 Цикл
+  ;;;а = а + 1;;;
+КонецЦикла;
+
+==>
+
+Module(
+  ModuleBlock(
+    ForStmt(
+      VariableName,
+      Start(Number),
+      End(Number),
+      Block(
+        AssignmentStmt(
+          VariableName,
+          Expression(
+            BinaryExpr(VariableName, ArithOp, Number)
+          )
+        )
+      )
+    )
+  )
+)
+
+# Semicolons in for each loops
+
+Для Каждого элемент Из массив Цикл
+  ;;;Обработать(элемент);;;
+КонецЦикла
+
+==>
+
+Module(
+  ModuleBlock(
+    ForEachStmt(
+      VariableName,
+      Collection(VariableName),
+      Block(
+        CallStmt(
+          VariableName,
+          ArgList(VariableName)
+        )
+      )
+    )
+  )
+)
+
+# No semicolon before end keywords
+
+Процедура Тест()
+  Если Истина Тогда
+    а = 1
+  КонецЕсли
+КонецПроцедуры
+
+==>
+
+Module(
+  ProcedureDef(
+    Name,
+    ParamList,
+    Block(
+      IfStmt(
+        Condition(True),
+        Block(
+          AssignmentStmt(VariableName, Expression(Number))
+        )
+      )
+    )
+  )
+)

@@ -1,56 +1,56 @@
 # Простой оператор Возврат без значения
 Возврат;
 ==>
-Module(
-  ReturnStmt)
+Module(ModuleBlock(
+  ReturnStmt))
 
 # Оператор Возврат с числом
 Возврат 1;
 ==>
-Module(
-  ReturnStmt(Expression(...)))
+Module(ModuleBlock(
+  ReturnStmt(Expression(...))))
 
 # Оператор Возврат со строкой
 Возврат "Привет";
 ==>
-Module(
-  ReturnStmt(Expression(...)))
+Module(ModuleBlock(
+  ReturnStmt(Expression(...))))
 
 # Оператор Возврат с переменной
 Возврат результат;
 ==>
-Module(
-  ReturnStmt(Expression(...)))
+Module(ModuleBlock(
+  ReturnStmt(Expression(...))))
 
 # Оператор Возврат с выражением
 Возврат 1 + 2;
 ==>
-Module(
-  ReturnStmt(...))
+Module(ModuleBlock(
+  ReturnStmt(...)))
 
 # Оператор Возврат с вызовом функции
 Возврат Функция1();
 ==>
-Module(
-  ReturnStmt(Expression(...)))
+Module(ModuleBlock(
+  ReturnStmt(Expression(...))))
 
 # Оператор Возврат с вызовом функции с параметрами
 Возврат Сумма(1, 2);
 ==>
-Module(
-  ReturnStmt(Expression(...)))
+Module(ModuleBlock(
+  ReturnStmt(Expression(...))))
 
 # Оператор Возврат на английском
 Return;
 ==>
-Module(
-  ReturnStmt)
+Module(ModuleBlock(
+  ReturnStmt))
 
 # Оператор Возврат на английском со значением
 Return 1;
 ==>
-Module(
-  ReturnStmt(Expression(...)))
+Module(ModuleBlock(
+  ReturnStmt(Expression(...))))
 
 # Оператор Возврат внутри функции
 Функция Сумма()
@@ -67,39 +67,39 @@ Module(FunctionDef(Name,ParamList,Block(
   Возврат 0;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(...),
   Block(
     ReturnStmt(Expression(...))),
   ElseClause(Block(
-    ReturnStmt(Expression(...))))))
+    ReturnStmt(Expression(...)))))))
 
 # Оператор Возврат в цикле
 Пока Истина Цикл
   Возврат 1;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
-  Block(ReturnStmt(Expression(...)))))
+  Block(ReturnStmt(Expression(...))))))
 
 # Оператор Возврат с методом объекта
 Возврат Объект.Метод();
 ==>
-Module(
-  ReturnStmt(Expression(...)))
+Module(ModuleBlock(
+  ReturnStmt(Expression(...))))
 
 # Оператор Возврат с тернарным выражением
 Возврат ?(условие, 1, 0);
 ==>
-Module(
-  ReturnStmt(Expression(TernaryExpr(...))))
+Module(ModuleBlock(
+  ReturnStmt(Expression(TernaryExpr(...)))))
 
 # Оператор Возврат с логическим выражением
 Возврат Истина И Ложь;
 ==>
-Module(
-  ReturnStmt(Expression(...)))
+Module(ModuleBlock(
+  ReturnStmt(Expression(...))))
 
 # Оператор Возврат в блоке обработки исключений
 Попытка
@@ -108,33 +108,33 @@ Module(
   Возврат 0;
 КонецПопытки;
 ==>
-Module(TryStmt(
+Module(ModuleBlock(TryStmt(
   Block(ReturnStmt(Expression(...))),
-  Block(ReturnStmt(Expression(...)))))
+  Block(ReturnStmt(Expression(...))))))
 
 # Оператор Возврат с созданием объекта
 Возврат Новый Структура;
 ==>
-Module(
-  ReturnStmt(Expression(NewExpr(...))))
+Module(ModuleBlock(
+  ReturnStmt(Expression(NewExpr(...)))))
 
 # Оператор Возврат с доступом к свойству
 Возврат Объект.Свойство;
 ==>
-Module(
-  ReturnStmt(Expression(MemberExpr(...))))
+Module(ModuleBlock(
+  ReturnStmt(Expression(MemberExpr(...)))))
 
 # Оператор Возврат с элементом массива
 Возврат массив[0];
 ==>
-Module(
-  ReturnStmt(Expression(MemberExpr(...))))
+Module(ModuleBlock(
+  ReturnStmt(Expression(MemberExpr(...)))))
 
 # Оператор Возврат с унарным оператором
 Возврат -5;
 ==>
-Module(
-  ReturnStmt(Expression(UnaryExpr(...))))
+Module(ModuleBlock(
+  ReturnStmt(Expression(UnaryExpr(...)))))
 
 # Оператор Возврат в процедуре
 Процедура Тест()

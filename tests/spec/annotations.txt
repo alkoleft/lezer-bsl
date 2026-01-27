@@ -1,0 +1,53 @@
+# Simple annotation
+
+&НаКлиенте
+Процедура Тест()
+КонецПроцедуры
+
+==>
+
+Module(
+  ProcedureDef(
+    Annotation(AnnotationType),
+    Name,
+    ParamList
+  )
+)
+
+# Annotation with parameter
+
+&Перед("Метод")
+Процедура Обработчик()
+КонецПроцедуры
+
+==>
+
+Module(
+  ProcedureDef(
+    Annotation(AnnotationType, String),
+    Name,
+    ParamList
+  )
+)
+
+# Multiple annotations
+
+&НаСервере
+&После("СоздатьНаСервере")
+Функция Обработка()
+    Возврат Истина;
+КонецФункции
+
+==>
+
+Module(
+  FunctionDef(
+    Annotation(AnnotationType),
+    Annotation(AnnotationType, String),
+    Name,
+    ParamList,
+    Block(
+      ReturnStmt(Expression(True))
+    )
+  )
+)

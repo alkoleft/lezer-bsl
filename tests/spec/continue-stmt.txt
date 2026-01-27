@@ -1,59 +1,64 @@
 # Простой оператор Продолжить
+Продолжить;
+==>
+Module(ModuleBlock(ContinueStmt))
+
+# Простой оператор Continue
 Continue;
 ==>
-Module(ContinueStmt)
+Module(ModuleBlock(ContinueStmt))
 
 # Оператор Продолжить в цикле пока
 Пока Истина Цикл
-  Continue;
+  Продолжить;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
-  Block(ContinueStmt)))
+  Block(ContinueStmt))))
 
 # Оператор Продолжить в цикле для
 Для а = 1 По 10 Цикл
-  Continue;
+  Продолжить;
 КонецЦикла;
 ==>
-Module(ForStmt(
+Module(ModuleBlock(ForStmt(
   VariableName,
   Start(...),
   End(...),
-  Block(ContinueStmt)))
+  Block(ContinueStmt))))
 
 # Оператор Продолжить в цикле для каждого
 Для Каждого элемент Из коллекция Цикл
-  Continue;
+  Продолжить;
 КонецЦикла;
 ==>
-Module(ForEachStmt(
+Module(ModuleBlock(ForEachStmt(
   VariableName,
   Collection(...),
-  Block(ContinueStmt)))
+  Block(ContinueStmt))))
 
 # Оператор Продолжить с условием
 Пока Истина Цикл
   Если условие Тогда
-    Continue;
+    Продолжить;
   КонецЕсли;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
   Block(IfStmt(
     Condition(...),
-    Block(ContinueStmt)))))
+    Block(ContinueStmt))))))
 
 # Оператор Продолжить во вложенном цикле
 Для а = 1 По 10 Цикл
   Для б = 1 По 10 Цикл
-    Continue;
+    Продолжить;
   КонецЦикла;
 КонецЦикла;
 ==>
-Module(ForStmt(
+Module(ModuleBlock(ForStmt(
   VariableName,
   Start(...),
   End(...),
@@ -61,33 +66,33 @@ Module(ForStmt(
     VariableName,
     Start(...),
     End(...),
-    Block(ContinueStmt)))))
+    Block(ContinueStmt))))))
 
 # Оператор Продолжить с операторами до него
 Пока Истина Цикл
   а = 1;
-  Continue;
+  Продолжить;
   б = 2;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
   Block(
     AssignmentStmt(...),
     ContinueStmt,
-    AssignmentStmt(...))))
+    AssignmentStmt(...)))))
 
 # Оператор Продолжить в блоке обработки исключений
 Пока Истина Цикл
   Попытка
-    Continue;
+    Продолжить;
   Исключение
     Сообщить("Ошибка");
   КонецПопытки;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
   Block(TryStmt(
     Block(ContinueStmt),
-    Block(...)))))
+    Block(...))))))

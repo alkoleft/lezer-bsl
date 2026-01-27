@@ -1,0 +1,341 @@
+# Стейтмент, оканчивающийся на точку с запятой
+а = 1;
+==>
+Module(ModuleBlock(
+  AssignmentStmt(...)))
+
+# Стейтмент без точки с запятой
+а = 1
+==>
+Module(ModuleBlock(AssignmentStmt(...)))
+
+# Несколько стейтментов, все заканчиваются на точку с запятой
+а = 1;
+б = 2;
+в = 3;
+==>
+Module(ModuleBlock(
+  AssignmentStmt(...),
+  AssignmentStmt(...),
+  AssignmentStmt(...)))
+
+# Несколько стейтментов, все кроме последнего заканчиваются на точку с запятой
+а = 1;
+б = 2;
+в = 3
+==>
+Module(ModuleBlock(
+  AssignmentStmt(...),
+  AssignmentStmt(...),
+  AssignmentStmt(...)))
+
+# Вызов метода с точкой с запятой
+Сообщить("Привет");
+==>
+Module(ModuleBlock(CallStmt(...)))
+
+# Вызов метода без точки с запятой
+Сообщить("Привет")
+==>
+Module(ModuleBlock(CallStmt(...)))
+
+# Несколько вызовов методов, все с точкой с запятой
+Метод1();
+Метод2();
+Метод3();
+==>
+Module(ModuleBlock(
+  CallStmt(...),
+  CallStmt(...),
+  CallStmt(...)))
+
+# Несколько вызовов методов, последний без точки с запятой
+Метод1();
+Метод2();
+Метод3()
+==>
+Module(ModuleBlock(
+  CallStmt(...),
+  CallStmt(...),
+  CallStmt(...)))
+
+# Смешанные стейтменты, все с точкой с запятой
+а = 1;
+Сообщить("Тест");
+б = 2;
+==>
+Module(ModuleBlock(
+  AssignmentStmt(...),
+  CallStmt(...),
+  AssignmentStmt(...)))
+
+# Смешанные стейтменты, последний без точки с запятой
+а = 1;
+Сообщить("Тест");
+б = 2
+==>
+Module(ModuleBlock(
+  AssignmentStmt(...),
+  CallStmt(...),
+  AssignmentStmt(...)))
+
+# Statement в блоке процедуры, все с точкой с запятой
+Процедура Тест()
+  а = 1;
+  б = 2;
+  в = 3;
+КонецПроцедуры
+==>
+Module(ProcedureDef(Name,ParamList,Block(
+  AssignmentStmt(...),
+  AssignmentStmt(...),
+  AssignmentStmt(...))))
+
+# Statement в блоке процедуры, последний без точки с запятой
+Процедура Тест()
+  а = 1;
+  б = 2;
+  в = 3
+КонецПроцедуры
+==>
+Module(ProcedureDef(Name,ParamList,Block(
+  AssignmentStmt(...),
+  AssignmentStmt(...),
+  AssignmentStmt(...))))
+
+# Statement в блоке процедуры, несколько операторов в одной строке (последний без точки с запятой)
+Процедура Тест()
+  а = 1; б = 2; в = 3
+КонецПроцедуры
+==>
+Module(ProcedureDef(Name,ParamList,Block(
+  AssignmentStmt(...),
+  AssignmentStmt(...),
+  AssignmentStmt(...))))
+
+# Statement в блоке процедуры, лишние ';' не создают пустые операторы
+Процедура Тест()
+  а = 1;;б = 2;
+КонецПроцедуры
+==>
+Module(ProcedureDef(Name,ParamList,Block(
+  AssignmentStmt(...),
+  AssignmentStmt(...))))
+
+# Statement в блоке функции, все с точкой с запятой
+Функция Тест()
+  а = 1;
+  б = 2;
+  Возврат а + б;
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Block(
+  AssignmentStmt(...),
+  AssignmentStmt(...),
+  ReturnStmt(Expression(...)))))
+
+# Statement в блоке функции, последний без точки с запятой
+Функция Тест()
+  а = 1;
+  б = 2;
+  Возврат а + б
+КонецФункции
+==>
+Module(FunctionDef(Name,ParamList,Block(
+  AssignmentStmt(...),
+  AssignmentStmt(...),
+  ReturnStmt(...))))
+
+# Statement в блоке условного оператора, все с точкой с запятой
+Если Истина Тогда
+  а = 1;
+  б = 2;
+  в = 3;
+КонецЕсли;
+==>
+Module(ModuleBlock(IfStmt(
+  Condition(True),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    AssignmentStmt(...)))))
+
+# Statement в блоке условного оператора, последний без точки с запятой
+Если Истина Тогда
+  а = 1;
+  б = 2;
+  в = 3
+КонецЕсли;
+==>
+Module(ModuleBlock(IfStmt(
+  Condition(True),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    AssignmentStmt(...)))))
+
+# Statement в блоке Иначе, все с точкой с запятой
+Если Истина Тогда
+  а = 1;
+Иначе
+  б = 2;
+  в = 3;
+КонецЕсли;
+==>
+Module(ModuleBlock(IfStmt(
+  Condition(True),
+  Block(AssignmentStmt(...)),
+  ElseClause(Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...))))))
+
+# Statement в блоке Иначе, последний без точки с запятой
+Если Истина Тогда
+  а = 1;
+Иначе
+  б = 2;
+  в = 3
+КонецЕсли;
+==>
+Module(ModuleBlock(IfStmt(
+  Condition(True),
+  Block(AssignmentStmt(...)),
+  ElseClause(Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...))))))
+
+# Statement в блоке цикла Пока, все с точкой с запятой
+Пока Истина Цикл
+  а = 1;
+  б = 2;
+  в = 3;
+КонецЦикла;
+==>
+Module(ModuleBlock(WhileStmt(
+  Condition(True),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    AssignmentStmt(...)))))
+
+# Statement в блоке цикла Пока, последний без точки с запятой
+Пока Истина Цикл
+  а = 1;
+  б = 2;
+  в = 3
+КонецЦикла;
+==>
+Module(ModuleBlock(WhileStmt(
+  Condition(True),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    AssignmentStmt(...)))))
+
+# Statement в блоке цикла Для, все с точкой с запятой
+Для а = 1 По 10 Цикл
+  сумма = сумма + а;
+  счетчик = счетчик + 1;
+  Сообщить(а);
+КонецЦикла;
+==>
+Module(ModuleBlock(ForStmt(
+  VariableName,
+  Start(Number),
+  End(Number),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    CallStmt(...)))))
+
+# Statement в блоке цикла Для, последний без точки с запятой
+Для а = 1 По 10 Цикл
+  сумма = сумма + а;
+  счетчик = счетчик + 1;
+  Сообщить(а)
+КонецЦикла;
+==>
+Module(ModuleBlock(ForStmt(
+  VariableName,
+  Start(Number),
+  End(Number),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    CallStmt(...)))))
+
+# Statement в блоке цикла Для Каждого, все с точкой с запятой
+Для Каждого элемент Из коллекция Цикл
+  результат = результат + элемент;
+  счетчик = счетчик + 1;
+  Сообщить(элемент);
+КонецЦикла;
+==>
+Module(ModuleBlock(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    CallStmt(...)))))
+
+# Statement в блоке цикла Для Каждого, последний без точки с запятой
+Для Каждого элемент Из коллекция Цикл
+  результат = результат + элемент;
+  счетчик = счетчик + 1;
+  Сообщить(элемент)
+КонецЦикла;
+==>
+Module(ModuleBlock(ForEachStmt(
+  VariableName,
+  Collection(VariableName),
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    CallStmt(...)))))
+
+# Statement в блоке Попытка, все с точкой с запятой
+Попытка
+  а = 1;
+  б = 2;
+  в = 3;
+Исключение
+  Сообщить("Ошибка");
+КонецПопытки;
+==>
+Module(ModuleBlock(TryStmt(
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    AssignmentStmt(...)),
+  Block(CallStmt(...)))))
+
+# Statement в блоке Попытка, последний без точки с запятой
+Попытка
+  а = 1;
+  б = 2;
+  в = 3
+Исключение
+  Сообщить("Ошибка");
+КонецПопытки;
+==>
+Module(ModuleBlock(TryStmt(
+  Block(
+    AssignmentStmt(...),
+    AssignmentStmt(...),
+    AssignmentStmt(...)),
+  Block(CallStmt(...)))))
+
+# Statement в блоке Исключение, последний без точки с запятой
+Попытка
+  а = 1;
+Исключение
+  Сообщить("Ошибка");
+  б = 2
+КонецПопытки;
+==>
+Module(ModuleBlock(TryStmt(
+  Block(AssignmentStmt(...)),
+  Block(
+    CallStmt(...),
+    AssignmentStmt(...)))))

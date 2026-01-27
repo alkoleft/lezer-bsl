@@ -1,0 +1,57 @@
+# Raise without parameters
+
+ВызватьИсключение
+
+==>
+
+Module(
+  ModuleBlock(
+    RaiseStmt
+  )
+)
+
+# Raise with expression
+
+ВызватьИсключение "Ошибка"
+
+==>
+
+Module(
+  ModuleBlock(
+    RaiseStmt(Expression(String))
+  )
+)
+
+# Raise with multiple parameters
+
+ВызватьИсключение(Выражение, Категория, Код, ДопИнфо, Причина)
+
+==>
+
+Module(
+  ModuleBlock(
+    RaiseStmt(
+      VariableName,
+      VariableName,
+      VariableName,
+      VariableName,
+      VariableName
+    )
+  )
+)
+
+# Raise with literals and expressions
+
+ВызватьИсключение("Текст ошибки", "Категория", 100)
+
+==>
+
+Module(
+  ModuleBlock(
+    RaiseStmt(
+      String,
+      String,
+      Number
+    )
+  )
+)

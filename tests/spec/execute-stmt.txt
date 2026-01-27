@@ -1,61 +1,61 @@
 # Простой оператор Выполнить с переменной
 Выполнить переменная;
 ==>
-Module(ExecuteStmt(Expression(VariableName)))
+Module(ModuleBlock(ExecuteStmt(Expression(VariableName))))
 
 # Оператор Выполнить с вызовом функции
 Выполнить Функция1();
 ==>
-Module(ExecuteStmt(Expression(CallExpr(VariableName,ArgList()))))
+Module(ModuleBlock(ExecuteStmt(Expression(CallExpr(VariableName,ArgList())))))
 
 # Оператор Выполнить с вызовом функции с параметрами
 Выполнить Функция1(1, 2, 3);
 ==>
-Module(ExecuteStmt(Expression(CallExpr(VariableName,ArgList(Number,Number,Number)))))
+Module(ModuleBlock(ExecuteStmt(Expression(CallExpr(VariableName,ArgList(Number,Number,Number))))))
 
 # Оператор Выполнить с методом объекта
 Выполнить Объект.Метод();
 ==>
-Module(ExecuteStmt(Expression(CallExpr(MemberExpr(VariableName,PropertyName),ArgList()))))
+Module(ModuleBlock(ExecuteStmt(Expression(CallExpr(MemberExpr(VariableName,PropertyName),ArgList())))))
 
 # Оператор Выполнить с методом объекта с параметрами
 Выполнить Объект.Метод(параметр1, параметр2);
 ==>
-Module(ExecuteStmt(Expression(CallExpr(
+Module(ModuleBlock(ExecuteStmt(Expression(CallExpr(
   MemberExpr(VariableName,PropertyName),
-  ArgList(VariableName,VariableName)))))
+  ArgList(VariableName,VariableName))))))
 
 # Оператор Выполнить на английском
 Execute Function1();
 ==>
-Module(ExecuteStmt(Expression(CallExpr(VariableName,ArgList()))))
+Module(ModuleBlock(ExecuteStmt(Expression(CallExpr(VariableName,ArgList())))))
 
 # Оператор Выполнить с цепочкой вызовов
 Выполнить Объект.Метод1().Метод2();
 ==>
-Module(ExecuteStmt(Expression(CallExpr(
+Module(ModuleBlock(ExecuteStmt(Expression(CallExpr(
   MemberExpr(CallExpr(MemberExpr(VariableName,PropertyName),ArgList()),PropertyName),
-  ArgList()))))
+  ArgList())))))
 
 # Оператор Выполнить с выражением
 Выполнить условие + 1;
 ==>
-Module(ExecuteStmt(Expression(BinaryExpr(VariableName,ArithOp,Number))))
+Module(ModuleBlock(ExecuteStmt(Expression(BinaryExpr(VariableName,ArithOp,Number)))))
 
 # Оператор Выполнить с доступом к элементу массива
 Выполнить массив[0];
 ==>
-Module(ExecuteStmt(Expression(MemberExpr(VariableName,Index(Number)))))
+Module(ModuleBlock(ExecuteStmt(Expression(MemberExpr(VariableName,Index(Number))))))
 
 # Оператор Выполнить с созданием объекта
 Выполнить Новый Структура;
 ==>
-Module(ExecuteStmt(Expression(NewExpr(TypeName))))
+Module(ModuleBlock(ExecuteStmt(Expression(NewExpr(TypeName)))))
 
 # Оператор Выполнить с созданием объекта с параметрами
 Выполнить Новый(Тип, Параметр1, Параметр2);
 ==>
-Module(ExecuteStmt(Expression(NewExpr(VariableName,VariableName,VariableName))))
+Module(ModuleBlock(ExecuteStmt(Expression(NewExpr(VariableName,VariableName,VariableName)))))
 
 # Оператор Выполнить внутри процедуры
 Процедура Тест()
@@ -63,22 +63,22 @@ Module(ExecuteStmt(Expression(NewExpr(VariableName,VariableName,VariableName))))
 КонецПроцедуры
 ==>
 Module(ProcedureDef(Name,ParamList,Block(
-ExecuteStmt(Expression(CallExpr(VariableName,ArgList()))))))
+  ExecuteStmt(Expression(CallExpr(VariableName,ArgList()))))))
 
 # Оператор Выполнить в условном операторе
 Если условие Тогда
   Выполнить Функция1();
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(VariableName),
-  Block(ExecuteStmt(Expression(CallExpr(VariableName,ArgList()))))))
+  Block(ExecuteStmt(Expression(CallExpr(VariableName,ArgList())))))))
 
 # Оператор Выполнить в цикле
 Пока Истина Цикл
   Выполнить Функция1();
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(True),
-  Block(ExecuteStmt(Expression(CallExpr(VariableName,ArgList()))))))
+  Block(ExecuteStmt(Expression(CallExpr(VariableName,ArgList())))))))

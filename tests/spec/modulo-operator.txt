@@ -1,0 +1,45 @@
+# Modulo operator
+
+а = 10 % 3
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(
+        BinaryExpr(
+          Number,
+          ArithOp,
+          Number
+        )
+      )
+    )
+  )
+)
+
+# Modulo with priority
+
+результат = а + 10 % 3
+
+==>
+
+Module(
+  ModuleBlock(
+    AssignmentStmt(
+      VariableName,
+      Expression(
+        BinaryExpr(
+          VariableName,
+          ArithOp,
+          BinaryExpr(
+            Number,
+            ArithOp,
+            Number
+          )
+        )
+      )
+    )
+  )
+)

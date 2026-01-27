@@ -1,66 +1,66 @@
 # Простой оператор УдалитьОбработчик
 УдалитьОбработчик событие, обработчик;
 ==>
-Module(
-  RemoveHandlerStmt(Event(VariableName),Handler(VariableName)))
+Module(ModuleBlock(
+  RemoveHandlerStmt(Event(VariableName),Handler(VariableName))))
 
 # Оператор УдалитьОбработчик с вызовом метода в обработчике
 УдалитьОбработчик "событие", ОбработчикСобытия();
 ==>
-Module(RemoveHandlerStmt(
+Module(ModuleBlock(RemoveHandlerStmt(
   Event(String),
-  Handler(CallExpr(VariableName,ArgList()))))
+  Handler(CallExpr(VariableName,ArgList())))))
 
 # Оператор УдалитьОбработчик с методом объекта в обработчике
 УдалитьОбработчик событие, Объект.Метод();
 ==>
-Module(RemoveHandlerStmt(
+Module(ModuleBlock(RemoveHandlerStmt(
   Event(VariableName),
-  Handler(CallExpr(...))))
+  Handler(CallExpr(...)))))
 
 # Оператор УдалитьОбработчик с методом объекта в событии
 УдалитьОбработчик Объект.Событие, обработчик;
 ==>
-Module(RemoveHandlerStmt(
+Module(ModuleBlock(RemoveHandlerStmt(
   Event(MemberExpr(...)),
-  Handler(VariableName)))
+  Handler(VariableName))))
 
 # Оператор УдалитьОбработчик на английском
 RemoveHandler "event", handler;
 ==>
-Module(RemoveHandlerStmt(Event(String),Handler(VariableName)))
+Module(ModuleBlock(RemoveHandlerStmt(Event(String),Handler(VariableName))))
 
 # Оператор УдалитьОбработчик с полным доступом к свойствам
 УдалитьОбработчик Объект.Событие, Объект.Обработчик();
 ==>
-Module(RemoveHandlerStmt(
+Module(ModuleBlock(RemoveHandlerStmt(
   Event(MemberExpr(...)),
-  Handler(CallExpr(...))))
+  Handler(CallExpr(...)))))
 
 # Оператор УдалитьОбработчик с элементом массива
 УдалитьОбработчик массив[0], обработчик;
 ==>
-Module(RemoveHandlerStmt(
+Module(ModuleBlock(RemoveHandlerStmt(
   Event(MemberExpr(...)),
-  Handler(VariableName)))
+  Handler(VariableName))))
 
 # Оператор УдалитьОбработчик в условном операторе
 Если условие Тогда
   УдалитьОбработчик событие, обработчик;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(...),
-  Block(RemoveHandlerStmt(Event(VariableName),Handler(VariableName)))))
+  Block(RemoveHandlerStmt(Event(VariableName),Handler(VariableName))))))
 
 # Оператор УдалитьОбработчик в цикле
 Пока Истина Цикл
   УдалитьОбработчик событие, обработчик;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(...),
-  Block(RemoveHandlerStmt(Event(VariableName),Handler(VariableName)))))
+  Block(RemoveHandlerStmt(Event(VariableName),Handler(VariableName))))))
 
 # Оператор УдалитьОбработчик внутри процедуры
 Процедура Тест()
@@ -68,29 +68,29 @@ Module(WhileStmt(
 КонецПроцедуры
 ==>
 Module(ProcedureDef(Name,ParamList,Block(
-RemoveHandlerStmt(Event(VariableName),Handler(VariableName)))))
+  RemoveHandlerStmt(Event(VariableName),Handler(VariableName)))))
 
 # Оператор УдалитьОбработчик с несколькими удалениями
 УдалитьОбработчик событие1, обработчик1;
 УдалитьОбработчик событие2, обработчик2;
 УдалитьОбработчик событие3, обработчик3;
 ==>
-Module(
-RemoveHandlerStmt(Event(VariableName),Handler(VariableName)),
-RemoveHandlerStmt(Event(VariableName),Handler(VariableName)),
-RemoveHandlerStmt(Event(VariableName),Handler(VariableName)))
+Module(ModuleBlock(
+  RemoveHandlerStmt(Event(VariableName),Handler(VariableName)),
+  RemoveHandlerStmt(Event(VariableName),Handler(VariableName)),
+  RemoveHandlerStmt(Event(VariableName),Handler(VariableName))))
 
 # Оператор УдалитьОбработчик с цепочкой вызовов
 УдалитьОбработчик Объект.Метод().Событие, обработчик;
 ==>
-Module(RemoveHandlerStmt(
+Module(ModuleBlock(RemoveHandlerStmt(
   Event(MemberExpr(...)),
-  Handler(VariableName)))
+  Handler(VariableName))))
 
 # Оператор УдалитьОбработчик после добавления
 ДобавитьОбработчик событие, обработчик;
 УдалитьОбработчик событие, обработчик;
 ==>
-Module(
+Module(ModuleBlock(
 AddHandlerStmt(Event(VariableName),Handler(VariableName)),
-RemoveHandlerStmt(Event(VariableName),Handler(VariableName)))
+RemoveHandlerStmt(Event(VariableName),Handler(VariableName))))

@@ -1,0 +1,90 @@
+# Single variable
+
+Перем а;
+
+==>
+
+Module(VarDecl(VarSpec(VariableName)))
+
+# Single variable with export
+
+Перем а Экспорт;
+
+==>
+
+Module(VarDecl(VarSpec(VariableName,Export)))
+
+# Multiple variables
+
+Перем а, б, в;
+
+==>
+
+Module(VarDecl(VarSpec(VariableName),VarSpec(VariableName),VarSpec(VariableName)))
+
+# Multiple variables with mixed export
+
+Перем а, б Экспорт, в;
+
+==>
+
+Module(VarDecl(VarSpec(VariableName),VarSpec(VariableName,Export),VarSpec(VariableName)))
+
+# English keywords
+
+Var x, y Export, z;
+
+==>
+
+Module(VarDecl(VarSpec(VariableName),VarSpec(VariableName,Export),VarSpec(VariableName)))
+
+# Multiple declarations
+
+Перем а;
+Перем б, в Экспорт;
+
+==>
+
+Module(VarDecl(VarSpec(VariableName)),VarDecl(VarSpec(VariableName),VarSpec(VariableName,Export)))
+
+# With annotation
+
+&НаКлиенте
+Перем а Экспорт;
+
+==>
+
+Module(VarDecl(Annotation(AnnotationType),VarSpec(VariableName,Export)))
+
+# Module with variables and code
+
+Перем глобальная;;;;;
+
+а = 1;
+
+==>
+
+Module(VarDecl(VarSpec(VariableName)),ModuleBlock(AssignmentStmt(VariableName,Expression(Number))))
+
+# Inside procedure
+
+Процедура Тест()
+    Перем а, б;
+    а = 1;
+КонецПроцедуры
+
+==>
+
+Module(ProcedureDef(Name,ParamList,VarDecl(VarSpec(VariableName),VarSpec(VariableName)),Block(AssignmentStmt(VariableName,Expression(Number)))))
+
+# Inside function with annotation
+
+Функция Тест()
+    &НаСервере
+    Перем результат Экспорт;
+    Возврат результат;
+КонецФункции
+
+==>
+
+Module(FunctionDef(Name,ParamList,VarDecl(Annotation(AnnotationType),VarSpec(VariableName,Export)),Block(ReturnStmt(Expression(VariableName)))))

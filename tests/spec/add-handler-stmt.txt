@@ -1,65 +1,65 @@
 # Простой оператор ДобавитьОбработчик
 ДобавитьОбработчик событие, обработчик;
 ==>
-Module(AddHandlerStmt(Event(VariableName),Handler(VariableName)))
+Module(ModuleBlock(AddHandlerStmt(Event(VariableName),Handler(VariableName))))
 
 # Оператор ДобавитьОбработчик с вызовом метода в обработчике
 ДобавитьОбработчик событие, ОбработчикСобытия();
 ==>
-Module(AddHandlerStmt(
+Module(ModuleBlock(AddHandlerStmt(
   Event(VariableName),
-  Handler(CallExpr(...))))
+  Handler(CallExpr(...)))))
 
 # Оператор ДобавитьОбработчик с методом объекта в обработчике
 ДобавитьОбработчик "событие", Объект.Метод();
 ==>
-Module(AddHandlerStmt(
+Module(ModuleBlock(AddHandlerStmt(
   Event(String),
-  Handler(CallExpr(...))))
+  Handler(CallExpr(...)))))
 
 # Оператор ДобавитьОбработчик с методом объекта в событии
 ДобавитьОбработчик Объект.Событие, обработчик;
 ==>
-Module(AddHandlerStmt(
+Module(ModuleBlock(AddHandlerStmt(
   Event(MemberExpr(...)),
-  Handler(VariableName)))
+  Handler(VariableName))))
 
 # Оператор ДобавитьОбработчик на английском
 AddHandler event, handler;
 ==>
-Module(AddHandlerStmt(Event(VariableName),Handler(VariableName)))
+Module(ModuleBlock(AddHandlerStmt(Event(VariableName),Handler(VariableName))))
 
 # Оператор ДобавитьОбработчик с полным доступом к свойствам
 ДобавитьОбработчик Объект.Событие, Объект.Обработчик();
 ==>
-Module(AddHandlerStmt(
+Module(ModuleBlock(AddHandlerStmt(
   Event(MemberExpr(...)),
-  Handler(CallExpr(...))))
+  Handler(CallExpr(...)))))
 
 # Оператор ДобавитьОбработчик с элементом массива
 ДобавитьОбработчик массив[0], обработчик;
 ==>
-Module(AddHandlerStmt(
+Module(ModuleBlock(AddHandlerStmt(
   Event(MemberExpr(...)),
-  Handler(VariableName)))
+  Handler(VariableName))))
 
 # Оператор ДобавитьОбработчик в условном операторе
 Если условие Тогда
   ДобавитьОбработчик событие, обработчик;
 КонецЕсли;
 ==>
-Module(IfStmt(
+Module(ModuleBlock(IfStmt(
   Condition(...),
-  Block(AddHandlerStmt(Event(VariableName),Handler(VariableName)))))
+  Block(AddHandlerStmt(Event(VariableName),Handler(VariableName))))))
 
 # Оператор ДобавитьОбработчик в цикле
 Пока Истина Цикл
   ДобавитьОбработчик событие, обработчик;
 КонецЦикла;
 ==>
-Module(WhileStmt(
+Module(ModuleBlock(WhileStmt(
   Condition(True),
-  Block(AddHandlerStmt(Event(VariableName),Handler(VariableName)))))
+  Block(AddHandlerStmt(Event(VariableName),Handler(VariableName))))))
 
 # Оператор ДобавитьОбработчик внутри процедуры
 Процедура Тест()
@@ -74,14 +74,14 @@ Module(ProcedureDef(Name,ParamList,Block(
 ДобавитьОбработчик событие2, обработчик2;
 ДобавитьОбработчик событие3, обработчик3;
 ==>
-Module(
+Module(ModuleBlock(
   AddHandlerStmt(Event(VariableName),Handler(VariableName)),
   AddHandlerStmt(Event(VariableName),Handler(VariableName)),
-  AddHandlerStmt(Event(VariableName),Handler(VariableName)))
+  AddHandlerStmt(Event(VariableName),Handler(VariableName))))
 
 # Оператор ДобавитьОбработчик с цепочкой вызовов
 ДобавитьОбработчик Объект.Метод().Событие, обработчик;
 ==>
-Module(AddHandlerStmt(
+Module(ModuleBlock(AddHandlerStmt(
   Event(MemberExpr(...)),
-  Handler(VariableName)))
+  Handler(VariableName))))
