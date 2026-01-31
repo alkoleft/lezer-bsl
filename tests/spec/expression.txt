@@ -16,14 +16,6 @@ Module(ModuleBlock(ReturnStmt(
 Module(ModuleBlock(ReturnStmt(
     Expression(String))))
 
-# Литерал - многострочная строка
-Возврат "строка1
-|строка2
-|строка3";
-==>
-Module(ModuleBlock(ReturnStmt(
-    Expression(MultilineString))))
-
 # Литерал - дата
 Возврат '20240101';
 ==>

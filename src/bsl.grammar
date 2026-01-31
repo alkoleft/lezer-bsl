@@ -28,7 +28,7 @@
   }
 
 // Пропускаемые символы при парсинге (пробелы и однострочные комментарии)
-@skip { space | LineComment | Preproc }
+@skip { space | lineComment | Preproc }
 
 // Определение токенов (лексических единиц)
 @tokens {
@@ -36,7 +36,7 @@
   space { @whitespace+ }
   
   // Однострочный комментарий, начинается с // и продолжается до конца строки
-  LineComment[isolate] {
+  lineComment {
     "//" ![\n]*
   }
 
@@ -52,23 +52,6 @@
     @digit+ ("." @digit+)?
   }
 
-  // Строковый литерал: в BSL используются двойные кавычки, экранирование через удвоение ("")
-  // Закрывающая кавычка сделана опциональной для поддержки незавершенных строк
-  String[isolate] { "\"" (stringContent | "\"\"")* "\""? }
-  
-  // Многострочная строка в BSL:
-  // "строка1
-  // |строка2
-  // |строка3"
-  MultilineString[isolate] {
-    "\"" (stringContent | "\"\"")*
-    (("\r"? "\n") $[ \t]* "|" (stringContent | "\"\"")*)+
-    "\""?
-  }
-
-  // Содержимое строки (любые символы кроме кавычек, обратного слэша и переводов строк)
-  stringContent { !["\\\n]+ }
-
   // Литерал даты: 'YYYYMMDD' или 'YYYYMMDDhhmmss' в одинарных кавычках
   // Поддерживает разделители: '2017.03.23 10:45:25', '2017\03\23-10~45~25'
   Date { "'" dateContent "'" }
@@ -82,9 +65,21 @@
   IdentContinue { IdentStart | @digit }
 
   // Приоритеты токенов для разрешения неоднозначностей
-  @precedence { LineComment, divide }
-  @precedence { MultilineString, String }
+  @precedence { lineComment, divide }
   @precedence { space, identifier }
+
+  // Токены для строк обрабатываются external tokenizer
+}
+
+@external tokens stringTokens from "./stringTokenizer.js" {
+  String
+  MultilineStringStart
+  MultilineStringContinue
+}
+
+MultilineString[@dynamicPrecedence=1] {
+  MultilineStringStart MultilineStringContinue * |
+  String String+
 }
 
 ModuleBlock {
@@ -110,17 +105,7 @@ Annotation {
   "&" AnnotationType ("(" String ")")?
 }
 
-AnnotationType {
-  kw<"AtClient", "НаКлиенте"> |
-  kw<"AtServer", "НаСервере"> |
-  kw<"AtServerNoContext", "НаСервереБезКонтекста"> |
-  kw<"AtClientAtServerNoContext", "НаКлиентеНаСервереБезКонтекста"> |
-  kw<"AtClientAtServer", "НаКлиентеНаСервере"> |
-  kw<"Before", "Перед"> |
-  kw<"After", "После"> |
-  kw<"Around", "Вместо"> |
-  kw<"ChangeAndValidate", "ИзменениеИКонтроль">
-}
+AnnotationType { identifier }
 
 // Определение процедуры: опционально асинхронная, ключевое слово Процедура, имя, список параметров,
 // опциональный модификатор Экспорт, блок кода, ключевое слово КонецПроцедуры
@@ -431,8 +416,8 @@ TernaryExpr {
 // Литерал: различные типы константных значений
 literal {
   Number |                                    // Числовой литерал
-  String |                                    // Строковый литерал
-  MultilineString |                           // Многострочный строковый литерал
+  MultilineString |
+  String |                                    // Строковый литерал (включая многострочный)
   Date |                                      // Литерал даты
   namedKw<"True", "Истина"> |                 // Булево значение Истина
   namedKw<"False", "Ложь"> |                  // Булево значение Ложь

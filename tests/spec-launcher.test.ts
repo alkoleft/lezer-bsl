@@ -8,9 +8,6 @@ import { fileURLToPath } from "node:url"
 
 const caseDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "spec")
 
-// Включаем диалект comments для парсера
-const parserWithComments = parser.configure({ dialect: "comments", strict: true })
-
 for (const file of fs.readdirSync(caseDir)) {
   if (!/\.txt$/.test(file)) continue
 
@@ -18,7 +15,7 @@ for (const file of fs.readdirSync(caseDir)) {
 
   describe(file, () => {
     for (const { name, run } of fileTests(content, file)) {
-      test(name, () => run(parserWithComments))
+      test(name, () => run(parser))
     }
   })
 }

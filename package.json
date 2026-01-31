@@ -14,7 +14,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "npx vitest",
+    "test": "npx vitest run",
     "test:benchmark": "npx vitest bench",
     "gen-lezer-bsl": "lezer-generator --typeScript src/bsl.grammar -o src/parser/bslParser.ts"
   },

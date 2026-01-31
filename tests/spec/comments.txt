@@ -2,16 +2,12 @@
 // Это комментарий
 Возврат 1;
 ==>
-Module(
-  LineComment,
-  ModuleBlock(ReturnStmt(...)))
+Module(ModuleBlock(ReturnStmt(Expression(Number))))
 
 # Комментарий в конце строки
 Возврат 1; // Комментарий после кода
 ==>
-Module(ModuleBlock(
-  ReturnStmt(...)),
-  LineComment)
+Module(ModuleBlock(ReturnStmt(Expression(Number))))
 
 # Комментарий между выражениями
 Возврат 1;
@@ -19,9 +15,8 @@ Module(ModuleBlock(
 Возврат 2;
 ==>
 Module(ModuleBlock(
-  ReturnStmt(...),
-  LineComment,
-  ReturnStmt(...)))
+  ReturnStmt(Expression(Number)),
+  ReturnStmt(Expression(Number))))
 
 # Комментарий внутри процедуры
 Процедура Тест()
@@ -32,11 +27,9 @@ Module(ModuleBlock(
 КонецПроцедуры
 ==>
 Module(ProcedureDef(Name,ParamList,
-  LineComment,
   Block(
-    AssignmentStmt(...),
-    LineComment,
-    AssignmentStmt(...))))
+    AssignmentStmt(VariableName, Expression(Number)),
+    AssignmentStmt(VariableName, Expression(Number)))))
 
 # Комментарий перед возвратом
 Функция Сумма()
@@ -45,8 +38,7 @@ Module(ProcedureDef(Name,ParamList,
 КонецФункции
 ==>
 Module(FunctionDef(Name,ParamList,
-  LineComment,
-  Block(...)))
+  Block(ReturnStmt(Expression(Number)))))
 
 # Множественные комментарии
 // Первый комментарий
@@ -55,12 +47,9 @@ Module(FunctionDef(Name,ParamList,
 // Третий комментарий
 Возврат 2;
 ==>
-Module(
-  LineComment,
-  LineComment,
-  ModuleBlock(ReturnStmt(...),
-  LineComment,
-  ReturnStmt(...)))
+Module(ModuleBlock(
+  ReturnStmt(Expression(Number)),
+  ReturnStmt(Expression(Number))))
 
 # Комментарий перед условным оператором
 Если Истина Тогда
@@ -70,21 +59,17 @@ Module(
 ==>
 Module(ModuleBlock(
   IfStmt(
-    Condition(...),
-    LineComment,
-    Block(...))))
+    Condition(True),
+    Block(AssignmentStmt(VariableName, Expression(Number))))))
 
 # Комментарий с выражением, содержащим деление
 Возврат 1 / 2; // Комментарий после деления
 ==>
 Module(ModuleBlock(
-  ReturnStmt(...)),
-  LineComment)
+  ReturnStmt(Expression(BinaryExpr(Number, ArithOp, Number)))))
 
 # Пустой комментарий
 // 
 Возврат 1;
 ==>
-Module(
-  LineComment,
-  ModuleBlock(ReturnStmt(...)))
+Module(ModuleBlock(ReturnStmt(Expression(Number))))

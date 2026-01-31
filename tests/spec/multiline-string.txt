@@ -1,0 +1,119 @@
+# Многострочная строка с символом | (регрессия)
+Возврат "строка1
+|строка2
+|строка3";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(...)))))
+
+# Конкатенация двух строк
+Возврат "строка1"
+"строка2";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(String,String)))))
+
+# Конкатенация трех строк
+Возврат "строка1"
+"строка2"
+"строка3";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(String,String,String)))))
+
+# Конкатенация с пробелами и отступами
+Возврат "строка1"
+    "строка2"
+        "строка3";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(String,String,String)))))
+
+# Обычная строка без конкатенации (регрессия)
+Возврат "строка";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(String))))
+
+# Две отдельные строки в разных выражениях
+Возврат "строка1";
+Возврат "строка2";
+==>
+Module(ModuleBlock(
+  ReturnStmt(Expression(String)),
+  ReturnStmt(Expression(String))))
+
+# Комментарий не прерывает конкатенацию
+а = "строка1"
+// комментарий
+"строка2";
+==>
+Module(ModuleBlock(
+  AssignmentStmt(VariableName, Expression(MultilineString(String,String)))))
+
+# Конкатенация в присваивании
+а = "строка1"
+"строка2";
+==>
+Module(ModuleBlock(
+  AssignmentStmt(VariableName, Expression(MultilineString(String,String)))))
+
+# Конкатенация с экранированными кавычками
+Возврат "строка1 ""кавычки"""
+"строка2 ""кавычки""";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(String,String)))))
+
+# Многострочная строка с | и экранированными кавычками (регрессия)
+Возврат "строка1 ""кавычки""
+|строка2 ""кавычки""";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(...)))))
+
+# Конкатенация с несколькими комментариями
+Возврат "строка1"
+// первый комментарий
+"строка2"
+// второй комментарий
+"строка3";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(String,String,String)))))
+
+# Многострочная строка с | и комментарием на строке //
+Возврат "строка1
+|строка2
+|// это часть строки
+|строка3";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(
+        MultilineStringStart,
+        MultilineStringContinue,
+        MultilineStringContinue,
+        MultilineStringContinue)))))
+
+# Комментарий между строками с |
+Возврат "строка1
+|строка2"
+// комментарий между фрагментами
+|строка3
+|строка4";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(
+        MultilineStringStart,
+        MultilineStringContinue,
+        MultilineStringContinue,
+        MultilineStringContinue)))))
+
+# Литерал - многострочная строка
+Возврат "строка1
+|строка2
+|строка3";
+==>
+Module(ModuleBlock(ReturnStmt(
+    Expression(MultilineString(...)))))
+
