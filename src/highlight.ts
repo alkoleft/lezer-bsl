@@ -25,7 +25,7 @@ export const bslHighlighting = styleTags({
     VarSpec: t.variableName,
     
     // Control flow statements
-    ["if then elseIf else endIf while do endDo for each in to" +
+    ["if then elseIf else endIf while do endDo for each in to " +
     "try except endTry continue break goto return raise"]: t.controlKeyword,
     
     "LogicOp and or not": t.operator,

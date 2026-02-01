@@ -50,6 +50,47 @@
             color: #cccccc;
         }
         
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-input {
+            background: #3c3c3c;
+            border: 1px solid #464647;
+            color: #cccccc;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            width: 150px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+        
+        .toggle-button {
+            background: #3c3c3c;
+            border: 1px solid #464647;
+            color: #cccccc;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            min-width: 28px;
+        }
+        
+        .toggle-button:hover {
+            background: #464647;
+        }
+        
+        .toggle-button.disabled {
+            opacity: 0.5;
+            color: #858585;
+        }
+        
         .update-time {
             font-size: 11px;
             color: #858585;
@@ -138,9 +179,12 @@
             margin: 2px 0;
         }
         
-        .tree-node.error-node .node-name {
-            color: #f48771;
-            font-weight: bold;
+        .tree-node.highlighted {
+            background-color: #264f78;
+        }
+        
+        .tree-node.filtered-out {
+            display: none;
         }
         
         .empty-tree {
@@ -182,6 +226,72 @@
         .cm-foldPlaceholder:hover {
             background-color: #1e3a5f;
         }
+        
+        .search-input::placeholder {
+            color: #6a6a6a;
+        }
+        
+        .stats-overlay {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(37, 37, 38, 0.95);
+            border: 1px solid #464647;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            color: #cccccc;
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            min-width: 200px;
+            transition: opacity 0.2s ease;
+        }
+        
+        .stats-overlay.hidden {
+            display: none;
+        }
+        
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #464647;
+        }
+        
+        .stats-title {
+            font-weight: 600;
+            color: #4ec9b0;
+        }
+        
+        .stats-toggle {
+            background: none;
+            border: none;
+            color: #858585;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .stats-toggle:hover {
+            color: #cccccc;
+        }
+        
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+        }
+        
+        .stats-label {
+            color: #9cdcfe;
+        }
+        
+        .stats-value {
+            color: #b5cea8;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -190,12 +300,43 @@
             <div class="panel-header">
                 <h2>BSL Code Editor</h2>
             </div>
-            <div class="editor-container" id="editor"></div>
+            <div class="editor-container" id="editor">
+                <div class="stats-overlay" id="stats-overlay">
+                    <div class="stats-header">
+                        <span class="stats-title">Code Stats</span>
+                        <button class="stats-toggle" id="stats-toggle">×</button>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Lines:</span>
+                        <span class="stats-value" id="stats-lines">0</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Characters:</span>
+                        <span class="stats-value" id="stats-chars">0</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Position:</span>
+                        <span class="stats-value" id="stats-position">1:1</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Procedures:</span>
+                        <span class="stats-value" id="stats-procedures">0</span>
+                    </div>
+                    <div class="stats-item">
+                        <span class="stats-label">Functions:</span>
+                        <span class="stats-value" id="stats-functions">0</span>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="panel">
             <div class="panel-header">
                 <h2>Parse Tree</h2>
-                <span id="update-time" class="update-time"></span>
+                <div class="search-container">
+                    <input type="text" id="ast-search" class="search-input" placeholder="Search nodes...">
+                    <button id="auto-update-toggle" class="toggle-button" title="Включить/выключить автообновление">🔄</button>
+                    <span id="update-time" class="update-time"></span>
+                </div>
             </div>
             <div id="tree-output" class="tree-output"></div>
         </div>

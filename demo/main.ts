@@ -1,10 +1,11 @@
 import { EditorView, keymap, highlightActiveLine, lineNumbers } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { defaultKeymap } from '@codemirror/commands'
-import { codeFolding, foldGutter, indentOnInput, foldNodeProp, foldInside } from '@codemirror/language'
+import { codeFolding, foldGutter, indentOnInput, foldNodeProp, foldInside, bracketMatching, syntaxTree } from '@codemirror/language'
 import { LRLanguage, LanguageSupport } from '@codemirror/language'
+import { search, highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 
-import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
+import { completionKeymap } from '@codemirror/autocomplete'
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete'
 import { Tree } from '@lezer/common'
 import { LezerBslParser } from '../src/parser/LezerBslParser'
@@ -13,6 +14,8 @@ import { parser as bslParser } from '../src/bslParser'
 import { monokai } from '@fsegurai/codemirror-theme-monokai'
 
 const parserInstance = new LezerBslParser()
+
+let autoUpdateEnabled = true
 
 // Создаем языковое расширение BSL с поддержкой fold
 const bslLanguage = LRLanguage.define({
@@ -28,44 +31,6 @@ const bslLanguage = LRLanguage.define({
   })
 })
 
-function bsl() {
-  return new LanguageSupport(bslLanguage, [
-    autocompletion({
-      override: [
-        (context) => {
-          const word = context.matchBefore(/\w*/)
-          if (!word) return null
-          
-          const bslKeywords = [
-            'Процедура', 'КонецПроцедуры', 'Функция', 'КонецФункции',
-            'Если', 'Тогда', 'Иначе', 'ИначеЕсли', 'КонецЕсли',
-            'Пока', 'Цикл', 'КонецЦикла', 'Для', 'По', 'КонецЦикла',
-            'Попытка', 'Исключение', 'КонецПопытки',
-            'Возврат', 'ВызватьИсключение', 'Прервать', 'Продолжить',
-            'Перем', 'Экспорт', 'Знач', 'Истина', 'Ложь', 'Неопределено',
-            'И', 'ИЛИ', 'НЕ', 'Новый',
-            // English keywords
-            'Procedure', 'EndProcedure', 'Function', 'EndFunction',
-            'If', 'Then', 'Else', 'ElsIf', 'EndIf',
-            'While', 'Do', 'EndDo', 'For', 'To', 'Each', 'In',
-            'Try', 'Except', 'EndTry',
-            'Return', 'Raise', 'Break', 'Continue',
-            'Var', 'Export', 'Val', 'True', 'False', 'Undefined',
-            'And', 'Or', 'Not', 'New'
-          ]
-          
-          return {
-            from: word.from,
-            options: bslKeywords.map(keyword => ({
-              label: keyword,
-              type: 'keyword'
-            }))
-          }
-        }
-      ]
-    })
-  ])
-}
 
 const initialCode = `// Демонстрация fold поведения в BSL
 Процедура ОсновнаяПроцедура() Экспорт
@@ -188,26 +153,78 @@ function createTreeHTML(tree: Tree, source: string): string {
 
 let editorView: EditorView
 
+function updateStats() {
+  const code = editorView.state.doc.toString()
+  const selection = editorView.state.selection.main
+  const line = editorView.state.doc.lineAt(selection.head)
+  const lineNumber = line.number
+  const columnNumber = selection.head - line.from + 1
+  
+  // Обновляем дерево для подсчета методов
+  const currentTree = syntaxTree(editorView.state)
+  
+  document.getElementById('stats-lines')!.textContent = editorView.state.doc.lines.toString()
+  document.getElementById('stats-chars')!.textContent = code.length.toString()
+  document.getElementById('stats-position')!.textContent = `${lineNumber}:${columnNumber}`
+  
+  // Count procedures and functions from AST
+  let procedures = 0
+  let functions = 0
+  
+  if (currentTree) {
+    currentTree.iterate({
+      enter: (node) => {
+        if (node.name === 'ProcedureDef') procedures++
+        if (node.name === 'FunctionDef') functions++
+      }
+    })
+  }
+  
+  document.getElementById('stats-procedures')!.textContent = procedures.toString()
+  document.getElementById('stats-functions')!.textContent = functions.toString()
+}
+
+function filterASTNodes(searchTerm: string) {
+  const nodes = document.querySelectorAll('.tree-node')
+  const term = searchTerm.toLowerCase()
+  
+  nodes.forEach(node => {
+    const nodeName = node.querySelector('.node-name')?.textContent?.toLowerCase() || ''
+    const nodeText = node.querySelector('.node-text')?.textContent?.toLowerCase() || ''
+    
+    if (!term || nodeName.includes(term) || nodeText.includes(term)) {
+      node.classList.remove('filtered-out')
+      if (term && (nodeName.includes(term) || nodeText.includes(term))) {
+        node.classList.add('highlighted')
+      } else {
+        node.classList.remove('highlighted')
+      }
+    } else {
+      node.classList.add('filtered-out')
+      node.classList.remove('highlighted')
+    }
+  })
+}
+
 function updateTree() {
   const code = editorView.state.doc.toString()
   const treeOutput = document.getElementById('tree-output')!
   const updateTime = document.getElementById('update-time')!
   
   try {
-    const startTime = performance.now()
-    const tree = parserInstance.parse(code)
-    const parseTime = performance.now() - startTime
+    // Используем уже полученное дерево из расширения
+    const tree = syntaxTree(editorView.state)
     const html = createTreeHTML(tree, code)
     treeOutput.innerHTML = html || '<div class="empty-tree">Пустое дерево</div>'
     
-    const now = new Date()
-    const timeStr = now.toLocaleTimeString('ru-RU', { 
-      hour: '2-digit', 
-      minute: '2-digit', 
-      second: '2-digit',
-      fractionalSecondDigits: 3
-    })
-    updateTime.textContent = `Обновлено: ${timeStr} (${parseTime.toFixed(2)} мс)`
+    // Apply current search filter
+    const searchInput = document.getElementById('ast-search') as HTMLInputElement
+    if (searchInput.value) {
+      filterASTNodes(searchInput.value)
+    }
+    
+    // Update stats
+    updateStats()
     
     // Обработчики для сворачивания узлов
     const nodeNames = treeOutput.querySelectorAll('.expandable .node-name')
@@ -262,17 +279,24 @@ function initEditor() {
       highlightActiveLine(),
       indentOnInput(),
       closeBrackets(),
+      bracketMatching(),
+      search(),
+      highlightSelectionMatches(),
       keymap.of([
         ...defaultKeymap,
         ...completionKeymap,
-        ...closeBracketsKeymap
+        ...closeBracketsKeymap,
+        ...searchKeymap
       ]),
-      bsl(),
+      new LanguageSupport(bslLanguage),
       monokai,
-
+      
       EditorView.updateListener.of((update) => {
-        if (update.docChanged) {
+        if (update.docChanged && autoUpdateEnabled) {
           updateTree()
+        }
+        if (update.selectionSet) {
+          updateStats()
         }
       })
     ]
@@ -287,4 +311,49 @@ function initEditor() {
 }
 
 // Инициализация после загрузки DOM
-document.addEventListener('DOMContentLoaded', initEditor)
+document.addEventListener('DOMContentLoaded', () => {
+  initEditor()
+  
+  // AST search functionality
+  const astSearch = document.getElementById('ast-search') as HTMLInputElement
+  astSearch.addEventListener('input', (e) => {
+    const target = e.target as HTMLInputElement
+    filterASTNodes(target.value)
+  })
+  
+  // Auto-update toggle functionality
+  const autoUpdateToggle = document.getElementById('auto-update-toggle') as HTMLButtonElement
+  autoUpdateToggle.addEventListener('click', () => {
+    autoUpdateEnabled = !autoUpdateEnabled
+    autoUpdateToggle.classList.toggle('disabled', !autoUpdateEnabled)
+    autoUpdateToggle.title = autoUpdateEnabled ? 'Выключить автообновление' : 'Включить автообновление'
+    
+    // Если включили автообновление, обновим дерево
+    if (autoUpdateEnabled) {
+      updateTree()
+    }
+  })
+  
+  // Stats overlay toggle
+  const statsToggle = document.getElementById('stats-toggle')!
+  const statsOverlay = document.getElementById('stats-overlay')!
+  
+  statsToggle.addEventListener('click', () => {
+    statsOverlay.classList.toggle('hidden')
+  })
+  
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Ctrl+Shift+S to toggle stats
+    if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+      e.preventDefault()
+      statsOverlay.classList.toggle('hidden')
+    }
+    
+    // Ctrl+Shift+F to focus AST search
+    if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+      e.preventDefault()
+      astSearch.focus()
+    }
+  })
+})
