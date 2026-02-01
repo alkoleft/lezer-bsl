@@ -28,7 +28,7 @@
   }
 
 // Пропускаемые символы при парсинге (пробелы и однострочные комментарии)
-@skip { space | lineComment | Preproc }
+@skip { space | Comment | Preproc }
 
 // Определение токенов (лексических единиц)
 @tokens {
@@ -36,7 +36,7 @@
   space { @whitespace+ }
   
   // Однострочный комментарий, начинается с // и продолжается до конца строки
-  lineComment {
+  Comment {
     "//" ![\n]*
   }
 
@@ -65,7 +65,7 @@
   IdentContinue { IdentStart | @digit }
 
   // Приоритеты токенов для разрешения неоднозначностей
-  @precedence { lineComment, divide }
+  @precedence { Comment, divide }
   @precedence { space, identifier }
 
   // Токены для строк обрабатываются external tokenizer
@@ -90,14 +90,14 @@ ModuleBlock {
 // Объявление переменных модуля: ключевое слово Перем, список спецификаций переменных, точка с запятой
 VarDecl {
   Annotation?
-  kw<"Var", "Перем">
+  namedKw<"var", "Перем">
   commaSep1<VarSpec>
 }
 
 // Спецификация переменной: имя переменной с опциональным модификатором Экспорт
 VarSpec {
   VariableName
-  namedKw<"Export", "Экспорт">?
+  namedKw<"export", "Экспорт">?
 }
 
 // Аннотация компиляции: директивы для процедур и функций
@@ -111,28 +111,28 @@ AnnotationType { identifier }
 // опциональный модификатор Экспорт, блок кода, ключевое слово КонецПроцедуры
 ProcedureDef {
   Annotation*
-  namedKw<"Async", "Асинх">?
-  kw<"Procedure", "Процедура">
+  namedKw<"async", "Асинх">?
+  namedKw<"procedure", "Процедура">
   Name { identifier }
   ParamList
-  namedKw<"Export", "Экспорт">?
+  namedKw<"export", "Экспорт">?
   (VarDecl ";")*
   Block?
-  kw<"EndProcedure", "КонецПроцедуры">
+  namedKw<"endProcedure", "КонецПроцедуры">
 }
 
 // Определение функции: опционально асинхронная, ключевое слово Функция, имя, список параметров,
 // опциональный модификатор Экспорт, блок кода, ключевое слово КонецФункции
 FunctionDef {
   Annotation*
-  namedKw<"Async", "Асинх">?
-  kw<"Function", "Функция">
+  namedKw<"async", "Асинх">?
+  namedKw<"function", "Функция">
   Name { identifier }
   ParamList
-  namedKw<"Export", "Экспорт">?
+  namedKw<"export", "Экспорт">?
   (VarDecl ";")*
   Block?
-  kw<"EndFunction", "КонецФункции">
+  namedKw<"endFunction", "КонецФункции">
 }
 
 // Список параметров: в круглых скобках, разделенные запятыми
@@ -140,7 +140,7 @@ ParamList { "(" commaSep<Param> ")" }
 
 // Параметр: опционально ключевое слово Знач (передача по значению), затем имя и значение по умолчанию
 Param {
-  namedKw<"Val", "Знач">?
+  namedKw<"val", "Знач">?
   Name { identifier }
   DefaultValue { "=" literal }?
 }
@@ -196,76 +196,76 @@ CallStmt {
 
 // Условный оператор: Если ... Тогда ... ИначеЕсли ... Тогда ... Иначе ... КонецЕсли
 IfStmt {
-  kw<"If", "Если">
+  namedKw<"if", "Если">
   Condition { expression }
-  kw<"Then", "Тогда">
+  namedKw<"then", "Тогда">
   Block?
   ElseIfClause {
-    kw<"ElseIf", "ИначеЕсли">
+    namedKw<"elseIf", "ИначеЕсли">
     Condition { expression }
-    kw<"Then", "Тогда">
+    namedKw<"then", "Тогда">
     Block?
   }*
   ElseClause {
-    kw<"Else", "Иначе">
+    namedKw<"else", "Иначе">
     Block?
   }?
-  kw<"EndIf", "КонецЕсли">
+  namedKw<"endIf", "КонецЕсли">
 }
 
 // Цикл пока: Пока ... Цикл ... КонецЦикла
 WhileStmt {
-  kw<"While", "Пока">
+  namedKw<"while", "Пока">
   Condition { expression }
-  kw<"Do", "Цикл">
+  namedKw<"do", "Цикл">
   Block?
-  kw<"EndDo", "КонецЦикла">
+  namedKw<"endDo", "КонецЦикла">
 }
 
 // Цикл для: может быть двух видов:
 // 1. Для Каждого ... Из ... (перебор коллекции)
 // 2. Для ... = ... По ... (цикл с счетчиком)
 ForEachStmt {
-  kw<"For", "Для">
-  kw<"Each", "Каждого">
+  namedKw<"for", "Для">
+  namedKw<"each", "Каждого">
   VariableName
-  kw<"In", "Из">
+  namedKw<"in", "Из">
   Collection { expression }
-  kw<"Do", "Цикл">
+  namedKw<"do", "Цикл">
   Block?
-  kw<"EndDo", "КонецЦикла">
+  namedKw<"endDo", "КонецЦикла">
 }
 ForStmt {
-  kw<"For", "Для">
+  namedKw<"for", "Для">
   VariableName
   "="
   Start { expression }
-  kw<"To", "По">
+  namedKw<"to", "По">
   End { expression }
-  kw<"Do", "Цикл">
+  namedKw<"do", "Цикл">
   Block?
-  kw<"EndDo", "КонецЦикла">
+  namedKw<"endDo", "КонецЦикла">
 }
 
 // Блок обработки исключений: Попытка ... Исключение ... КонецПопытки
 TryStmt {
-  kw<"Try", "Попытка">
+  namedKw<"try", "Попытка">
   Block?
-  kw<"Except", "Исключение">
+  namedKw<"except", "Исключение">
   Block?
-  kw<"EndTry", "КонецПопытки">
+  namedKw<"endTry", "КонецПопытки">
 }
 
 // Оператор возврата из функции/процедуры: Возврат [значение]
 ReturnStmt {
-  kw<"Return", "Возврат">
+  namedKw<"return", "Возврат">
   Expression { expression }?
 }
 
 // Оператор вызова исключения: ВызватьИсключение [значение] или ВызватьИсключение(параметры)
 // Форма со скобками требует минимум 2 параметра для различения от ParenthesizedExpr
 RaiseStmt {
-  kw<"Raise", "ВызватьИсключение"> (
+  namedKw<"raise", "ВызватьИсключение"> (
     "(" expression "," commaSep<expression> ")" |
     Expression { expression }
   )?
@@ -275,23 +275,23 @@ RaiseStmt {
 // Не распознается после точки (чтобы не конфликтовать с CallStmt: Объект.Выполнить())
 ExecuteStmt {
   !member
-  kw<"Execute", "Выполнить">
+  namedKw<"execute", "Выполнить">
   Expression { expression }
 }
 
 // Оператор продолжения цикла: Продолжить (переход к следующей итерации)
 ContinueStmt {
-  kw<"Continue", "Продолжить">
+  namedKw<"continue", "Продолжить">
 }
 
 // Оператор прерывания цикла: Прервать (выход из цикла)
 BreakStmt {
-  kw<"Break", "Прервать">
+  namedKw<"break", "Прервать">
 }
 
 // Оператор перехода: Перейти ~метка
 GotoStmt {
-  kw<"Goto", "Перейти">
+  namedKw<"goto", "Перейти">
   "~"
   LabelName { identifier }
 }
@@ -305,7 +305,7 @@ LabelStmt {
 
 // Оператор добавления обработчика события: ДобавитьОбработчик событие, обработчик
 AddHandlerStmt {
-  kw<"AddHandler", "ДобавитьОбработчик">
+  namedKw<"addHandler", "ДобавитьОбработчик">
   Event { expression }
   ","
   Handler { expression }
@@ -313,7 +313,7 @@ AddHandlerStmt {
 
 // Оператор удаления обработчика события: УдалитьОбработчик событие, обработчик
 RemoveHandlerStmt {
-  kw<"RemoveHandler", "УдалитьОбработчик">
+  namedKw<"removeHandler", "УдалитьОбработчик">
   Event { expression }
   ","
   Handler { expression }
@@ -331,7 +331,7 @@ AssignmentStmt {
   //   Объект.Метод1().Метод2().Свойство = ...
   // Представляем как ArgList + продолжение цепочки доступа, повторяемое несколько раз.
   (ArgList (memberAccess | indexAccess)*)*
-  "="
+  AssignOp { "=" }
   Expression { expression }
 }
 
@@ -356,22 +356,22 @@ CallExpr {
 
 // Бинарное выражение: операции с двумя операндами
 BinaryExpr {
-  expression !times (divide | ArithOp<"%"> | ArithOp<"*">) expression |
-  expression !plus (ArithOp<"+"> | ArithOp<"-">) expression |
-  expression !rel (CompareOp<">=" | "<=" | ">" | "<">) expression |
-  expression !equal CompareOp<"=" | "<>"> expression |
-  expression !and LogicOp<namedKw<"AND", "И">> expression |
-  expression !or LogicOp<namedKw<"OR", "ИЛИ">> expression
+  expression !times (divide | op<Arith, "%" | "*">) expression |
+  expression !plus op<Arith, "+" | "-"> expression |
+  expression !rel op<Compare, ">=" | "<=" | ">" | "<"> expression |
+  expression !equal op<Compare, "=" | "<>"> expression |
+  expression !and op<Logic, namedKw<"and", "И">> expression |
+  expression !or op<Logic, namedKw<"or", "ИЛИ">> expression
 }
 
 // Асинхронное выражение: Ждать выражение
 AwaitExpr {
-  !prefix kw<"Await", "Ждать"> expression
+  !prefix namedKw<"await", "Ждать"> expression
 }
 
 // Унарное выражение: НЕ выражение или отрицание числа
 UnaryExpr {
-  !prefix (namedKw<"NOT", "НЕ"> | ArithOp<"-">) expression
+  !prefix (op<Logic, namedKw<"not", "НЕ">> | op<Arith, "-">) expression
 }
 
 // Выражение в скобках: (выражение)
@@ -398,8 +398,8 @@ ArgList { "(" commaSep<expression> ")" }
 
 // Создание нового объекта: Новый Тип, Новый Тип(параметры) или Новый(конструктор, параметры)
 NewExpr {
-  kw<"New", "Новый"> !newExpr TypeName { identifier } ArgList? |
-  kw<"New", "Новый"> "(" commaSep1<expression> ")"
+  namedKw<"new", "Новый"> !newExpr TypeName { identifier } ArgList? |
+  namedKw<"new", "Новый"> "(" TypeName {expression} ("," expression)* ")"
 }
 
 // Тернарное выражение: ?(условие, значение_если_истина, значение_если_ложь)
@@ -419,34 +419,20 @@ literal {
   MultilineString |
   String |                                    // Строковый литерал (включая многострочный)
   Date |                                      // Литерал даты
-  namedKw<"True", "Истина"> |                 // Булево значение Истина
-  namedKw<"False", "Ложь"> |                  // Булево значение Ложь
-  namedKw<"Undefined", "Неопределено"> |      // Значение Неопределено
-  @specialize[@name=Null]<identifier, "Null"> // Значение Null
+  namedKw<"true", "Истина"> |                 // Булево значение Истина
+  namedKw<"false", "Ложь"> |                  // Булево значение Ложь
+  namedKw<"undefined", "Неопределено"> |      // Значение Неопределено
+  @specialize[@name=null]<identifier, "Null"> // Значение Null
 }
 
 // --- Вспомогательные правила для ключевых слов (MVP: каноническое написание RU/EN) ---
 
-// Общее правило для ключевых слов: поддерживает русский и английский варианты
-kw<termEn, termRu> {
-  @specialize<identifier, termRu> |
-  @specialize<identifier, termEn>
-}
-
 // Именованное ключевое слово: аналогично kw, но с явным именем в AST
 namedKw<termEn, termRu> {
-  @specialize[@name={termEn}]<identifier, termRu> |
-  @specialize[@name={termEn}]<identifier, termEn>
+  @specialize[@name={termEn}]<identifier, termEn | termRu >
 }
 
-// Арифметический оператор: базовое правило для арифметических операций
-ArithOp<expr> { expr }
-
-// Логический оператор: базовое правило для логических операций
-LogicOp<expr> { expr }
-
-// Оператор сравнения: базовое правило для операций сравнения
-CompareOp<expr> { expr }
+op[@name={name} "Op"]<name, body> { body }
 
 // Вспомогательное правило: разделенный запятыми список элементов (может быть пустым)
 commaSep<content> {

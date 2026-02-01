@@ -1,6 +1,6 @@
 # New without parameters
 
-объект = Новый Массив
+объект = new Массив
 
 ==>
 
@@ -8,8 +8,9 @@ Module(
   ModuleBlock(
     AssignmentStmt(
       VariableName,
+      AssignOp,
       Expression(
-        NewExpr(TypeName)
+        NewExpr(new, TypeName)
       )
     )
   )
@@ -25,9 +26,10 @@ Module(
   ModuleBlock(
     AssignmentStmt(
       VariableName,
+      AssignOp,
       Expression(
         CallExpr(
-          NewExpr(TypeName),
+          NewExpr(new, TypeName),
           ArgList(Number)
         )
       )
@@ -45,9 +47,10 @@ Module(
   ModuleBlock(
     AssignmentStmt(
       VariableName,
+      AssignOp,
       Expression(
         CallExpr(
-          NewExpr(TypeName),
+          NewExpr(new, TypeName),
           ArgList(
             String,
             VariableName,
@@ -70,8 +73,10 @@ Module(
   ModuleBlock(
     AssignmentStmt(
       VariableName,
+      AssignOp,
       Expression(
         NewExpr(
+          new,
           VariableName,
           VariableName
         )

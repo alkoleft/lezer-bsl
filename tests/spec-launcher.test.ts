@@ -1,6 +1,6 @@
 import { describe, test } from "vitest"
 import { fileTests } from "@lezer/generator/dist/test"
-import { parser } from "../src/parser/bslParser"
+import { parser } from "../src/bslParser"
 
 import * as fs from "node:fs"
 import * as path from "node:path"

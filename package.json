@@ -10,26 +10,35 @@
   "private": false,
   "type": "module",
   "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
+    "build": "npm run gen && tsc",
     "test": "npx vitest run",
     "test:benchmark": "npx vitest bench",
-    "gen-lezer-bsl": "lezer-generator --typeScript src/bsl.grammar -o src/parser/bslParser.ts"
+    "gen": "lezer-generator --typeScript src/bsl.grammar -o src/bslParser.ts",
+    "prepublishOnly": "npm run build",
+    "demo:dev": "cd demo && npm run dev",
+    "demo:build": "cd demo && npm run build"
   },
   "devDependencies": {
     "@lezer/generator": "^1.8.0",
-    "@types/node": "^25.0.3",
+    "@types/node": "^25.2.0",
     "typescript": "~5.9.3",
-    "vite": "npm:rolldown-vite@7.2.5",
-    "vitest": "^4.0.16"
-  },
-  "overrides": {
-    "vite": "npm:rolldown-vite@7.2.5"
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "@lezer/common": "^1.5.0",
-    "@lezer/lr": "^1.4.7"
+    "@lezer/highlight": "^1.2.3",
+    "@lezer/lr": "^1.4.8"
   }
 }
