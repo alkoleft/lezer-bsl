@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Demo to GitHub Pages
 
 on:
   push:
@@ -27,13 +27,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
+          cache: 'pnpm'
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
-      - name: Build
-        run: yarn build
+      - name: Install demo dependencies
+        run: |
+          cd demo
+          pnpm install --frozen-lockfile
+
+      - name: Build demo
+        run: |
+          cd demo
+          pnpm run build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
 
@@ -43,7 +52,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: './demo/dist'
 
   deploy:
     environment:
