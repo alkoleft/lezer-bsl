@@ -1,3 +1,5 @@
+@detectDelim
+
 @precedence {
   else @right,
   member,

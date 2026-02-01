@@ -1,7 +1,7 @@
 import { EditorView, keymap, highlightActiveLine, lineNumbers } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { defaultKeymap } from '@codemirror/commands'
-import { foldGutter, indentOnInput } from '@codemirror/language'
+import { codeFolding, foldGutter, indentOnInput, foldNodeProp, foldInside } from '@codemirror/language'
 import { LRLanguage, LanguageSupport } from '@codemirror/language'
 
 import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
@@ -14,10 +14,17 @@ import { monokai } from '@fsegurai/codemirror-theme-monokai'
 
 const parserInstance = new LezerBslParser()
 
-// Создаем языковое расширение BSL
+// Создаем языковое расширение BSL с поддержкой fold
 const bslLanguage = LRLanguage.define({
   parser: bslParser.configure({
-    props: [ bslHighlighting ]
+    props: [ 
+      bslHighlighting,
+      foldNodeProp.add({
+        "ProcedureDef FunctionDef": foldInside,
+        "IfStmt WhileStmt ForStmt ForEachStmt TryStmt": foldInside,
+        "Block": (node) => ({ from: node.from, to: node.to })
+      })
+    ]
   })
 })
 
@@ -60,25 +67,79 @@ function bsl() {
   ])
 }
 
-const initialCode = `// Это комментарий
-Процедура Тест() // Еще комментарий
-    Перем а; // Комментарий переменной
-    а = 1;
-    б = 2 + a;
-    Значение = new Array(2);
-    Значение[0] = а;
-    Значение[1] = б;
-    Значение = Новый ("Массив", 2);
-
-    Если а > 0 И б >= 2 and (true Или Истина) Тогда
-        Сообщить("Положительное число");
+const initialCode = `// Демонстрация fold поведения в BSL
+Процедура ОсновнаяПроцедура() Экспорт
+    // Блок переменных
+    Перем Счетчик;
+    Перем Результат;
+    Перем Массив;
+    
+    Счетчик = 0;
+    Массив = Новый Массив;
+    
+    // Условная конструкция
+    Если Счетчик < 10 Тогда
+        Сообщить("Начинаем обработку");
+        
+        // Вложенное условие
+        Если Массив.Количество() = 0 Тогда
+            Массив.Добавить("Первый элемент");
+            Массив.Добавить("Второй элемент");
+        КонецЕсли;
+        
+    ИначеЕсли Счетчик >= 10 И Счетчик < 20 Тогда
+        Сообщить("Средняя обработка");
+    Иначе
+        Сообщить("Завершающая обработка");
     КонецЕсли;
-    Возврат а + 2;
+    
+    // Цикл While
+    Пока Счетчик < Массив.Количество() Цикл
+        Элемент = Массив[Счетчик];
+        Сообщить("Обрабатываем: " + Элемент);
+        Счетчик = Счетчик + 1;
+    КонецЦикла;
+    
+    // Цикл For
+    Для Индекс = 0 По Массив.ВГраница() Цикл
+        Если Массив[Индекс] <> Неопределено Тогда
+            Результат = ВычислитьЗначение(Массив[Индекс]);
+        КонецЕсли;
+    КонецЦикла;
+    
+    // Обработка исключений
+    Попытка
+        РискованнаяОперация();
+        Сообщить("Операция выполнена успешно");
+    Исключение
+        Сообщить("Произошла ошибка: " + ОписаниеОшибки());
+        ВызватьИсключение;
+    КонецПопытки;
+    
+    Возврат Результат;
 КонецПроцедуры
 
-Функция ВычислитьСумму(Знач Число1, Знач Число2) Экспорт
-    Возврат Число1 + Число2;
-КонецФункции`
+Функция ВычислитьЗначение(Знач Параметр) Экспорт
+    // Простая функция для демонстрации
+    Если ТипЗнч(Параметр) = Тип("Строка") Тогда
+        Возврат СтрДлина(Параметр);
+    ИначеЕсли ТипЗнч(Параметр) = Тип("Число") Тогда
+        Возврат Параметр * 2;
+    Иначе
+        Возврат 0;
+    КонецЕсли;
+КонецФункции
+
+Процедура РискованнаяОперация()
+    // Имитация операции, которая может вызвать исключение
+    СлучайноеЧисло = Окр(Случ() * 10);
+    
+    Если СлучайноеЧисло > 5 Тогда
+        ВызватьИсключение("Случайная ошибка для демонстрации");
+    КонецЕсли;
+    
+    Сообщить("Операция выполнена без ошибок");
+КонецПроцедуры`
 
 function walkTree(cursor: ReturnType<Tree['cursor']>, source: string, indent: number = 0): string {
   let html = ''
@@ -196,6 +257,7 @@ function initEditor() {
     doc: initialCode,
     extensions: [
       lineNumbers(),
+      codeFolding(),
       foldGutter(),
       highlightActiveLine(),
       indentOnInput(),
